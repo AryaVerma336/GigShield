@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GigShield — Income Protection for Delivery Partners</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--ease:cubic-bezier(.22,1,.36,1);--spring:cubic-bezier(.34,1.56,.64,1);--green:#22c55e;--gRgb:34,197,94;--amber:#f59e0b;--aRgb:245,158,11;--red:#ef4444;--rRgb:239,68,68;--purple:#a855f7;--pRgb:168,85,247;--blue:#3b82f6;--bRgb:59,130,246;--ff:'DM Sans',sans-serif;--fh:'Instrument Serif',serif;--fm:'JetBrains Mono',monospace;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--ff);background:#060a08;color:#fff;}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px;}
+
+/* CURSOR */
+#cd{position:fixed;width:7px;height:7px;background:#fff;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:difference;transition:width .2s var(--spring),height .2s var(--spring);}
+#cr{position:fixed;width:38px;height:38px;border:1.5px solid rgba(255,255,255,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .35s var(--ease),height .35s var(--ease),border-color .3s;}
+body.cx #cd{width:12px;height:12px;}
+body.cx #cr{width:56px;height:56px;border-color:rgba(var(--gRgb),.6);}
+
+/* PARTICLES */
+#pcv{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;}
+
+/* TOAST */
+#toast-wrap{position:fixed;top:24px;right:24px;z-index:9990;display:flex;flex-direction:column;gap:8px;}
+.toast{
+  padding:12px 18px;border-radius:14px;font-size:13px;font-weight:600;
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  display:flex;align-items:center;gap:10px;min-width:260px;max-width:340px;
+  animation:toastIn .4s var(--spring) forwards;
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(30px);}to{opacity:1;transform:none;}}
+.toast.out{animation:toastOut .3s var(--ease) forwards;}
+@keyframes toastOut{to{opacity:0;transform:translateX(30px);}}
+.t-success{background:rgba(var(--gRgb),.15);border:1px solid rgba(var(--gRgb),.35);color:#86efac;}
+.t-error{background:rgba(var(--rRgb),.15);border:1px solid rgba(var(--rRgb),.35);color:#fca5a5;}
+.t-info{background:rgba(var(--bRgb),.15);border:1px solid rgba(var(--bRgb),.35);color:#93c5fd;}
+.t-warn{background:rgba(var(--aRgb),.15);border:1px solid rgba(var(--aRgb),.35);color:#fcd34d;}
+
+/* NOTIF DOT */
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--red);position:absolute;top:4px;right:4px;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(var(--rRgb),.4);}70%{box-shadow:0 0 0 6px rgba(var(--rRgb),0);}}
+
+/* ══════ LANDING ══════ */
+#landing{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:opacity .8s var(--ease),transform .8s var(--ease);}
+#landing.exit{opacity:0;transform:scale(1.04);pointer-events:none;}
+.land-bg{position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&q=90&auto=format&fit=crop') center/cover no-repeat;animation:bgZ 20s ease-out forwards;}
+@keyframes bgZ{from{transform:scale(1.06);}to{transform:scale(1);}}
+.land-ov{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 40%,rgba(0,0,0,.18),rgba(0,0,0,.65) 100%),linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.1) 40%,rgba(0,0,0,.6) 100%);}
+
+/* LAND NAV */
+.land-nav{position:absolute;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:26px 40px;z-index:5;}
+.land-logo{display:flex;align-items:center;gap:10px;font-family:var(--fh);font-size:22px;color:#fff;opacity:0;animation:fadeD .8s var(--ease) .2s forwards;}
+.land-gem{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--green),#16a34a);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 20px rgba(var(--gRgb),.4);}
+.land-nav-r{display:flex;align-items:center;gap:10px;opacity:0;animation:fadeD .8s var(--ease) .4s forwards;}
+.gnb{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:var(--ff);font-size:13px;font-weight:600;padding:9px 20px;border-radius:40px;cursor:pointer;transition:all .25s var(--ease);}
+.gnb:hover{background:rgba(255,255,255,.18);transform:translateY(-1px);}
+.gnb.g{background:rgba(var(--gRgb),.18);border-color:rgba(var(--gRgb),.4);color:#a7f3d0;}
+.gnb.g:hover{background:rgba(var(--gRgb),.28);}
+
+/* LAND HERO */
+.land-hero{position:relative;z-index:4;text-align:center;padding:0 24px;margin-bottom:150px;}
+.land-ey{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.75);font-family:var(--fm);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;padding:6px 16px;border-radius:40px;margin-bottom:26px;opacity:0;animation:riseUp .9s var(--ease) .5s forwards;}
+.ldot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.land-t{font-family:var(--fh);font-size:clamp(50px,8.5vw,106px);font-weight:400;line-height:.97;letter-spacing:-2px;color:#fff;text-shadow:0 4px 40px rgba(0,0,0,.5);margin-bottom:20px;opacity:0;animation:riseUp 1s var(--ease) .7s forwards;}
+.land-t em{font-style:italic;color:rgba(255,255,255,.6);}
+.land-t .hi{color:#86efac;}
+.land-s{font-size:17px;font-weight:400;color:rgba(255,255,255,.6);max-width:460px;margin:0 auto 34px;line-height:1.65;text-shadow:0 2px 12px rgba(0,0,0,.4);opacity:0;animation:riseUp .9s var(--ease) .9s forwards;}
+.land-ctas{display:flex;align-items:center;justify-content:center;gap:12px;opacity:0;animation:riseUp .9s var(--ease) 1.1s forwards;}
+.cta{padding:14px 34px;border-radius:14px;border:none;font-family:var(--ff);font-size:15px;font-weight:700;cursor:pointer;transition:all .25s var(--spring);}
+.cta-p{background:var(--green);color:#fff;box-shadow:0 4px 24px rgba(var(--gRgb),.5);}
+.cta-p:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 8px 36px rgba(var(--gRgb),.55);}
+.cta-g{background:rgba(255,255,255,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,.28);color:#fff;}
+.cta-g:hover{background:rgba(255,255,255,.2);transform:translateY(-2px);}
+
+/* FEATURES ROW */
+.land-feats{position:absolute;top:86px;left:50%;transform:translateX(-50%);display:flex;gap:10px;flex-wrap:wrap;justify-content:center;z-index:4;opacity:0;animation:fadeD .9s var(--ease) 1.3s forwards;}
+.fp{display:flex;align-items:center;gap:7px;background:rgba(0,0,0,.35);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);font-size:12px;font-weight:500;padding:7px 15px;border-radius:40px;}
+
+/* SCROLL HINT */
+.land-scr{position:absolute;bottom:170px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:riseUp .8s var(--ease) 2s forwards;z-index:4;}
+.scrb{width:1px;height:46px;background:linear-gradient(to bottom,rgba(255,255,255,.6),transparent);animation:scrAnim 2.2s ease-in-out infinite;}
+@keyframes scrAnim{0%{transform:scaleY(0);transform-origin:top;}45%{transform:scaleY(1);transform-origin:top;}46%{transform-origin:bottom;}90%,100%{transform:scaleY(0);transform-origin:bottom;}}
+.scrl{font-family:var(--fm);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);}
+
+/* GLASS BOTTOM BAR */
+.gbar{position:absolute;bottom:0;left:0;right:0;z-index:6;opacity:0;animation:slideUp .9s var(--ease) 1.4s forwards;}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;}}
+.gbar-in{display:flex;align-items:stretch;background:rgba(255,255,255,.1);backdrop-filter:blur(32px) saturate(160%);-webkit-backdrop-filter:blur(32px) saturate(160%);border:1px solid rgba(255,255,255,.22);border-top:1px solid rgba(255,255,255,.3);border-bottom:none;border-radius:20px 20px 0 0;overflow:hidden;}
+.gbi{flex:1;display:flex;align-items:center;gap:11px;padding:18px 20px;border-right:1px solid rgba(255,255,255,.12);cursor:pointer;transition:background .25s;}
+.gbi:last-child{border-right:none;}
+.gbi:hover{background:rgba(255,255,255,.08);}
+.gbi-icon{font-size:20px;flex-shrink:0;}
+.gbi-lbl{font-size:12px;font-weight:600;color:rgba(255,255,255,.85);}
+.gbi-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
+.gbcta{flex:0 0 auto;padding:18px 26px;display:flex;align-items:center;gap:8px;background:rgba(var(--gRgb),.2);border-left:1px solid rgba(var(--gRgb),.3);cursor:pointer;transition:background .25s;}
+.gbcta:hover{background:rgba(var(--gRgb),.3);}
+.gbcta-t{font-size:13px;font-weight:700;color:#a7f3d0;}
+
+/* STATS TICKER on landing */
+.land-ticker{position:absolute;bottom:90px;left:0;right:0;z-index:5;display:flex;justify-content:center;gap:40px;opacity:0;animation:fadeD 1s var(--ease) 1.8s forwards;}
+.lt-item{text-align:center;}
+.lt-val{font-family:var(--fh);font-size:28px;font-weight:400;color:#fff;letter-spacing:-1px;}
+.lt-lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;font-family:var(--fm);letter-spacing:1px;text-transform:uppercase;}
+
+@keyframes fadeD{from{opacity:0;}to{opacity:1;}}
+@keyframes riseUp{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:none;}}
+
+/* ══════ LOGIN PANEL ══════ */
+#login-panel{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:flex-end;pointer-events:none;}
+.lp-bd{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .5s var(--ease);}
+.lp-sh{position:relative;z-index:2;width:440px;max-width:100%;height:100vh;background:rgba(8,14,10,.95);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-left:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .55s var(--ease);overflow-y:auto;}
+#login-panel.open{pointer-events:all;}
+#login-panel.open .lp-bd{opacity:1;}
+#login-panel.open .lp-sh{transform:translateX(0);}
+.lp-img{height:200px;position:relative;overflow:hidden;flex-shrink:0;}
+.lp-img img{width:100%;height:100%;object-fit:cover;}
+.lp-img-ov{position:absolute;inset:0;background:linear-gradient(to bottom,transparent 40%,rgba(8,14,10,.98) 100%);}
+.lp-img-tx{position:absolute;bottom:20px;left:26px;right:26px;}
+.lp-img-h{font-family:var(--fh);font-size:24px;font-weight:400;color:#fff;}
+.lp-img-s{font-size:12px;color:rgba(255,255,255,.45);margin-top:3px;}
+.lp-body{padding:24px;flex:1;}
+.lp-tabs{display:flex;gap:0;background:rgba(255,255,255,.06);border-radius:12px;padding:4px;margin-bottom:24px;}
+.lp-tab{flex:1;text-align:center;padding:9px;border-radius:9px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);cursor:pointer;transition:all .2s;}
+.lp-tab.active{background:rgba(var(--gRgb),.15);color:var(--green);}
+.lp-tc{display:none;animation:fadeD .3s var(--ease);}
+.lp-tc.active{display:block;}
+.lp-lbl{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:6px;display:block;font-family:var(--fm);}
+.lp-in{width:100%;padding:12px 15px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-family:var(--ff);font-size:14px;outline:none;margin-bottom:13px;transition:border-color .25s,box-shadow .25s;}
+.lp-in:focus{border-color:rgba(var(--gRgb),.5);box-shadow:0 0 0 3px rgba(var(--gRgb),.1);}
+.lp-in::placeholder{color:rgba(255,255,255,.2);}
+.lp-sub{width:100%;padding:13px;border-radius:12px;border:none;background:var(--green);color:#fff;font-family:var(--ff);font-size:14px;font-weight:700;cursor:pointer;transition:all .25s var(--spring);margin-top:4px;box-shadow:0 4px 18px rgba(var(--gRgb),.3);}
+.lp-sub:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(var(--gRgb),.4);}
+.lp-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:3;}
+.lp-close:hover{background:rgba(255,255,255,.18);}
+.lp-div{display:flex;align-items:center;gap:10px;margin:16px 0;}
+.lp-div::before,.lp-div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+.lp-div span{font-size:11px;color:rgba(255,255,255,.25);font-family:var(--fm);}
+.wt-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:13px;}
+.wt{padding:11px 13px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);cursor:pointer;text-align:center;transition:all .2s;}
+.wt:hover,.wt.sel{background:rgba(var(--gRgb),.1);border-color:rgba(var(--gRgb),.35);}
+.wt-i{font-size:20px;margin-bottom:4px;}
+.wt-n{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);}
+.wt-s{font-size:10px;color:rgba(255,255,255,.3);margin-top:1px;}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ══════ APP SHELL ══════ */
+#app{position:fixed;inset:0;z-index:50;display:flex;transform:translateY(100%);transition:transform .7s var(--ease);pointer-events:none;background:#060a08;}
+#app.open{transform:translateY(0);pointer-events:all;}
+
+/* SIDEBAR */
+.sb{width:264px;flex-shrink:0;background:rgba(6,10,8,.96);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;height:100vh;overflow:hidden;position:relative;}
+.sb::before{content:'';position:absolute;top:-80px;left:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(var(--gRgb),.1),transparent 65%);pointer-events:none;animation:orbF 7s ease-in-out infinite;}
+@keyframes orbF{0%,100%{transform:translate(0,0);}50%{transform:translate(10px,16px);}}
+.sb-top{padding:22px 20px 16px;border-bottom:1px solid rgba(255,255,255,.07);position:relative;z-index:1;}
+.sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:3px;}
+.sb-gem{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--green),#16a34a);display:flex;align-items:center;justify-content:center;font-size:14px;box-shadow:0 0 14px rgba(var(--gRgb),.35);}
+.sb-nm{font-family:var(--fh);font-size:20px;font-weight:400;color:#fff;}
+.sb-tg{font-size:9px;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;font-family:var(--fm);}
+.sb-worker{margin:10px 12px;padding:11px 13px;background:rgba(var(--gRgb),.07);border:1px solid rgba(var(--gRgb),.18);border-radius:13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .2s;position:relative;z-index:1;}
+.sb-worker:hover{background:rgba(var(--gRgb),.12);}
+.sb-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 0 12px rgba(var(--aRgb),.3);}
+.sb-wn{font-size:13px;font-weight:600;color:#fff;}
+.sb-ws{font-size:11px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:5px;margin-top:1px;}
+.sb-wd{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+.sb-plan{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(var(--gRgb),.12);color:var(--green);border:1px solid rgba(var(--gRgb),.25);font-family:var(--fm);letter-spacing:.5px;margin-left:auto;}
+.nav-w{flex:1;overflow-y:auto;padding:7px 9px;position:relative;z-index:1;}
+.nav-w::-webkit-scrollbar{display:none;}
+.nsec{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.22);padding:10px 12px 3px;font-family:var(--fm);}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:11px;cursor:pointer;margin-bottom:2px;transition:background .2s,transform .15s var(--spring);position:relative;}
+.ni:hover{background:rgba(255,255,255,.05);transform:translateX(2px);}
+.ni.active{background:rgba(var(--gRgb),.1);border:1px solid rgba(var(--gRgb),.18);}
+.ni-i{font-size:15px;width:20px;text-align:center;}
+.ni-l{font-size:13px;font-weight:500;color:rgba(255,255,255,.6);}
+.ni.active .ni-l{color:var(--green);font-weight:600;}
+.ni-b{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:20px;}
+.sb-weather{margin:8px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 13px;position:relative;z-index:1;}
+.sw-r{display:flex;align-items:center;justify-content:space-between;}
+.sw-l{display:flex;align-items:center;gap:8px;}
+.sw-t{font-family:var(--fh);font-size:19px;color:#fff;}
+.sw-d{font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;}
+.sw-b{font-size:9px;font-weight:700;padding:3px 8px;border-radius:20px;font-family:var(--fm);letter-spacing:.5px;}
+.br{background:rgba(var(--rRgb),.15);color:#ff9090;border:1px solid rgba(var(--rRgb),.35);animation:blink 2s infinite;}
+.bw{background:rgba(var(--aRgb),.15);color:#fbbf24;border:1px solid rgba(var(--aRgb),.35);}
+.bg{background:rgba(var(--gRgb),.12);color:var(--green);border:1px solid rgba(var(--gRgb),.3);}
+.sb-ft{padding:10px 12px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:8px;position:relative;z-index:1;}
+.sb-bk{flex:1;padding:8px;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:transparent;color:rgba(255,255,255,.45);font-family:var(--ff);font-size:12px;cursor:pointer;transition:all .2s;}
+.sb-bk:hover{background:rgba(255,255,255,.05);color:#fff;}
+.sb-set{width:32px;height:32px;border-radius:9px;border:1px solid rgba(255,255,255,.09);background:transparent;color:rgba(255,255,255,.4);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.sb-set:hover{background:rgba(255,255,255,.06);color:#fff;}
+
+/* MAIN */
+.main-c{flex:1;overflow-y:auto;height:100vh;background:#060a08;}
+
+/* PAGES */
+.page{display:none;padding:30px 34px;max-width:1100px;animation:pgIn .45s var(--ease);}
+.page.active{display:block;}
+@keyframes pgIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+/* IMMERSIVE BANDS */
+.ib{position:relative;overflow:hidden;border-radius:20px;margin-bottom:16px;display:flex;align-items:flex-end;}
+.ib img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 8s var(--ease);}
+.ib:hover img{transform:scale(1.04);}
+.ib-ov{position:absolute;inset:0;}
+.ib-c{position:relative;z-index:2;padding:26px 30px;color:#fff;}
+.ib-tag{font-family:var(--fm);font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:9px;}
+.ib-h{font-family:var(--fh);font-size:clamp(20px,3.2vw,38px);font-weight:400;letter-spacing:-.5px;line-height:1.1;}
+.ib-p{font-size:13px;color:rgba(255,255,255,.6);margin-top:7px;max-width:400px;line-height:1.6;}
+.ib-stats{position:absolute;bottom:0;right:26px;display:flex;gap:7px;}
+.ibs{background:rgba(255,255,255,.1);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.18);border-radius:13px 13px 0 0;padding:12px 16px;min-width:105px;}
+.ibs-l{font-size:9px;letter-spacing:2px;text-transform:uppercase;opacity:.5;margin-bottom:4px;font-family:var(--fm);}
+.ibs-v{font-family:var(--fh);font-size:20px;font-weight:400;}
+
+/* STATS GRID */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:14px;}
+.sc{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);border-radius:15px;padding:17px 19px;position:relative;overflow:hidden;transition:transform .25s var(--spring),box-shadow .25s;cursor:pointer;}
+.sc:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.5);}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc.g::before{background:linear-gradient(90deg,var(--green),#4ade80);}
+.sc.o::before{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+.sc.r::before{background:linear-gradient(90deg,var(--red),#f87171);}
+.sc.b::before{background:linear-gradient(90deg,var(--green),#86efac);}
+.sc.p::before{background:linear-gradient(90deg,var(--purple),#c084fc);}
+.sc-i{font-size:20px;margin-bottom:8px;}
+.sc-v{font-family:var(--fh);font-size:28px;font-weight:400;letter-spacing:-1px;color:#fff;line-height:1;margin-bottom:3px;}
+.sc-l{font-size:11px;color:rgba(255,255,255,.4);}
+.sc-d{font-size:10px;margin-top:4px;}
+.du{color:var(--green);}.dd{color:var(--red);}
+
+/* ALERT BANNER */
+.ab{padding:13px 17px;border-radius:13px;margin-bottom:14px;display:flex;align-items:flex-start;gap:12px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);}
+.ab-r{background:rgba(var(--rRgb),.08);border:1.5px solid rgba(var(--rRgb),.25);animation:abp 3s ease-in-out infinite;}
+.ab-o{background:rgba(var(--aRgb),.08);border:1.5px solid rgba(var(--aRgb),.25);}
+.ab-g{background:rgba(var(--gRgb),.08);border:1.5px solid rgba(var(--gRgb),.25);}
+.ab-b{background:rgba(var(--bRgb),.08);border:1.5px solid rgba(var(--bRgb),.25);}
+@keyframes abp{0%,100%{box-shadow:none;}50%{box-shadow:0 0 0 3px rgba(var(--rRgb),.1);}}
+.ab-ico{font-size:19px;flex-shrink:0;margin-top:1px;}
+.ab-t{font-size:13px;font-weight:700;margin-bottom:2px;}
+.ab-b2{font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;}
+.ab-btn{margin-left:auto;flex-shrink:0;padding:6px 14px;border-radius:8px;border:none;cursor:pointer;font-family:var(--ff);font-size:11px;font-weight:700;transition:all .2s;white-space:nowrap;}
+
+/* GLASS CARD */
+.gc{background:rgba(255,255,255,.04);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(255,255,255,.07);border-radius:17px;padding:20px;position:relative;overflow:hidden;transition:transform .25s var(--spring),border-color .2s;}
+.gc:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.12);}
+.gc-bar{position:absolute;top:0;left:0;right:0;height:2px;}
+.gc-t{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.3);margin-bottom:13px;font-family:var(--fm);}
+
+/* COVERAGE CARD */
+.cov-h{background:linear-gradient(135deg,#051a0a,#0a3520);border:1.5px solid rgba(var(--gRgb),.25);border-radius:19px;padding:26px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(var(--gRgb),.08);margin-bottom:13px;}
+.cov-h::before{content:'';position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(var(--gRgb),.12),transparent 65%);pointer-events:none;}
+.ch{position:relative;z-index:1;}
+.ch-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.ch-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;}
+.ch-tier{font-family:var(--fh);font-size:22px;font-weight:400;color:#fff;}
+.ch-live{display:flex;align-items:center;gap:6px;background:rgba(var(--gRgb),.12);border:1px solid rgba(var(--gRgb),.25);padding:5px 12px;border-radius:40px;font-size:10px;font-weight:600;color:#86efac;}
+.ch-ld{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite;}
+.ch-amt{font-family:var(--fh);font-size:48px;font-weight:400;color:#fff;letter-spacing:-2px;line-height:1;margin-bottom:3px;}
+.ch-al{font-size:12px;color:rgba(255,255,255,.4);}
+.ch-bar{margin-top:16px;}
+.ch-bl{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.3);margin-bottom:7px;}
+.ch-trk{height:4px;background:rgba(255,255,255,.1);border-radius:4px;overflow:hidden;}
+.ch-fill{height:100%;background:linear-gradient(90deg,var(--green),#4ade80);border-radius:4px;transition:width 1.4s var(--ease);box-shadow:0 0 8px rgba(var(--gRgb),.4);}
+.ch-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);}
+.ch-mv{font-family:var(--fh);font-size:16px;color:#fff;}
+.ch-ml{font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;}
+
+/* RISK MAP */
+.rmap{border-radius:14px;overflow:hidden;height:200px;position:relative;background:linear-gradient(160deg,#03100a,#020a06);border:1.5px solid rgba(255,255,255,.07);}
+.rmap-g{position:absolute;inset:0;background-image:linear-gradient(rgba(var(--gRgb),.07) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--gRgb),.07) 1px,transparent 1px);background-size:26px 26px;}
+.mz{position:absolute;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;font-family:var(--fm);text-align:center;line-height:1.3;}
+.mz-r{background:rgba(var(--rRgb),.18);border-color:rgba(var(--rRgb),.55);color:#ff9090;animation:zp 2.5s ease-in-out infinite;}
+.mz-o{background:rgba(var(--aRgb),.15);border-color:rgba(var(--aRgb),.45);color:#fbbf24;animation:zp 3s ease-in-out infinite .5s;}
+.mz-g{background:rgba(var(--gRgb),.12);border-color:rgba(var(--gRgb),.35);color:#86efac;animation:zp 3.5s ease-in-out infinite 1s;}
+@keyframes zp{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+.mw{position:absolute;width:12px;height:12px;background:var(--amber);border-radius:50%;border:2px solid #fff;animation:mwp 2s ease-in-out infinite;box-shadow:0 0 14px rgba(var(--aRgb),.8);}
+@keyframes mwp{0%,100%{box-shadow:0 0 10px rgba(var(--aRgb),.6);}50%{box-shadow:0 0 22px rgba(var(--aRgb),1);}}
+.rm-leg{position:absolute;bottom:8px;left:10px;display:flex;gap:9px;}
+.rm-li{display:flex;align-items:center;gap:5px;font-size:9px;color:rgba(255,255,255,.4);font-family:var(--fm);}
+.rm-dot{width:6px;height:6px;border-radius:50%;}
+
+/* TRIGGER LIST */
+.tl{display:flex;flex-direction:column;}
+.tli{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.tli:last-child{border-bottom:none;}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.tl-b{flex:1;}
+.tl-t{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;}
+.tl-m{font-size:11px;color:rgba(255,255,255,.35);display:flex;gap:7px;flex-wrap:wrap;}
+.tl-a{font-family:var(--fh);font-size:16px;color:var(--green);}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:40px;font-size:9px;font-weight:600;font-family:var(--fm);letter-spacing:.5px;}
+.pg{background:rgba(var(--gRgb),.1);color:var(--green);border:1px solid rgba(var(--gRgb),.25);}
+.po{background:rgba(var(--aRgb),.1);color:var(--amber);border:1px solid rgba(var(--aRgb),.25);}
+.pr{background:rgba(var(--rRgb),.1);color:var(--red);border:1px solid rgba(var(--rRgb),.25);}
+.pp{background:rgba(var(--pRgb),.1);color:var(--purple);border:1px solid rgba(var(--pRgb),.2);}
+.pb{background:rgba(var(--bRgb),.1);color:var(--blue);border:1px solid rgba(var(--bRgb),.2);}
+
+/* CLAIM FLOW */
+.cf{display:flex;align-items:center;margin-bottom:18px;}
+.cfs{flex:1;text-align:center;position:relative;}
+.cfs::after{content:'';position:absolute;top:13px;left:50%;width:100%;height:1px;background:rgba(255,255,255,.1);z-index:0;}
+.cfs:last-child::after{display:none;}
+.cfs-d{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin:0 auto 6px;position:relative;z-index:1;}
+.cfs.done .cfs-d{background:var(--green);color:#fff;box-shadow:0 0 12px rgba(var(--gRgb),.4);}
+.cfs.active .cfs-d{background:rgba(var(--gRgb),.15);border:2px solid var(--green);color:var(--green);box-shadow:0 0 0 4px rgba(var(--gRgb),.1);}
+.cfs.pend .cfs-d{background:rgba(255,255,255,.07);color:rgba(255,255,255,.25);}
+.cfs-l{font-size:10px;font-weight:600;color:rgba(255,255,255,.35);}
+.cfs.done .cfs-l,.cfs.active .cfs-l{color:rgba(255,255,255,.75);}
+
+/* PAYOUT */
+.paycrd{background:rgba(var(--gRgb),.07);border:1.5px solid rgba(var(--gRgb),.2);border-radius:14px;padding:22px;text-align:center;backdrop-filter:blur(16px);}
+.pay-amt{font-family:var(--fh);font-size:58px;font-weight:400;letter-spacing:-3px;color:var(--green);line-height:1;margin-bottom:5px;text-shadow:0 0 40px rgba(var(--gRgb),.3);}
+.pay-l{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:16px;}
+.pay-upi{display:flex;align-items:center;justify-content:center;gap:9px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:10px 16px;font-size:11px;color:rgba(255,255,255,.55);font-family:var(--fm);}
+
+/* FRAUD SIGNALS */
+.sigs{display:flex;flex-direction:column;gap:6px;}
+.sig{display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(255,255,255,.03);border-radius:9px;border:1px solid rgba(255,255,255,.06);}
+.sig-i{font-size:15px;width:19px;text-align:center;}
+.sig-n{font-size:12px;font-weight:500;color:rgba(255,255,255,.75);flex:1;}
+.sig-s{font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;font-family:var(--fm);}
+.sok{background:rgba(var(--gRgb),.1);color:var(--green);border:1px solid rgba(var(--gRgb),.25);}
+.sw2{background:rgba(var(--aRgb),.1);color:var(--amber);border:1px solid rgba(var(--aRgb),.25);}
+.sb3{background:rgba(var(--rRgb),.1);color:var(--red);border:1px solid rgba(var(--rRgb),.25);}
+
+/* FRAUD RING */
+.fr{position:relative;width:96px;height:96px;margin:0 auto 10px;}
+.fr svg{transform:rotate(-90deg);}
+.fr-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.fr-n{font-family:var(--fh);font-size:22px;font-weight:400;}
+.fr-l{font-size:9px;color:rgba(255,255,255,.3);letter-spacing:1.5px;text-transform:uppercase;font-family:var(--fm);}
+
+/* TIERS */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.tier{border-radius:17px;padding:22px;border:1.5px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);cursor:pointer;transition:transform .3s var(--spring),box-shadow .3s;}
+.tier:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(0,0,0,.5);}
+.tier.feat{background:linear-gradient(135deg,#052010,#0a3520);border-color:rgba(var(--gRgb),.3);box-shadow:0 0 28px rgba(var(--gRgb),.1);}
+.tier.prem{background:linear-gradient(135deg,#0d0d1a,#151530);border-color:rgba(168,85,247,.25);}
+.tier-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:2px 9px;border-radius:20px;margin-bottom:11px;font-family:var(--fm);}
+.tier-p{font-family:var(--fh);font-size:36px;font-weight:400;letter-spacing:-1.5px;line-height:1;margin-bottom:2px;}
+.tier-per{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:14px;}
+.tier-pay{font-family:var(--fh);font-size:20px;font-weight:400;margin-bottom:2px;}
+.tier-pl{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;}
+.tier-f{font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.65);}
+.tier-f:last-of-type{border-bottom:none;}
+.tier-btn{margin-top:14px;width:100%;padding:10px;border-radius:10px;border:none;font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s var(--spring);}
+
+/* DATA TABLE */
+.dt{width:100%;border-collapse:collapse;}
+.dt th{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.28);font-weight:600;padding:8px 12px;text-align:left;border-bottom:1.5px solid rgba(255,255,255,.07);font-family:var(--fm);}
+.dt td{padding:11px 12px;font-size:12px;color:rgba(255,255,255,.6);border-bottom:1px solid rgba(255,255,255,.05);}
+.dt tr:last-child td{border-bottom:none;}
+.dt tr:hover td{background:rgba(255,255,255,.03);}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;}
+.g65{display:grid;grid-template-columns:1.4fr 1fr;gap:13px;}
+
+/* CHARTS */
+.bars{display:flex;align-items:flex-end;gap:5px;height:100px;}
+.bar{flex:1;border-radius:4px 4px 0 0;min-height:4px;cursor:pointer;position:relative;transition:filter .2s;}
+.bar:hover{filter:brightness(1.2);}
+.bar:hover::after{content:attr(data-v);position:absolute;bottom:calc(100%+5px);left:50%;transform:translateX(-50%);background:rgba(255,255,255,.9);color:#000;font-size:9px;padding:3px 7px;border-radius:5px;white-space:nowrap;font-family:var(--fm);}
+.bar-lbls{display:flex;gap:5px;padding:4px 0 0;}
+.bar-lbl{flex:1;text-align:center;font-size:9px;color:rgba(255,255,255,.25);font-family:var(--fm);}
+.dnt{position:relative;width:110px;height:110px;margin:0 auto;}
+.dnt svg{transform:rotate(-90deg);}
+.dnt-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dnt-v{font-family:var(--fh);font-size:22px;color:#fff;}
+.dnt-l{font-size:9px;color:rgba(255,255,255,.3);font-family:var(--fm);}
+
+/* FORECAST */
+.forecast{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+.fd{text-align:center;padding:11px 5px;border-radius:11px;border:1.5px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);transition:transform .2s var(--spring);}
+.fd:hover{transform:translateY(-3px);}
+.fd-i{font-size:19px;margin-bottom:5px;}
+.fd-n{font-size:9px;font-weight:600;color:rgba(255,255,255,.4);margin-bottom:3px;font-family:var(--fm);}
+.fd-r{font-size:10px;font-weight:700;margin-top:2px;}
+.fd-a{font-size:9px;color:rgba(255,255,255,.25);margin-top:2px;}
+
+/* FORM */
+.fg{margin-bottom:13px;}
+.fl{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;display:block;font-family:var(--fm);}
+.fi,.fs{width:100%;padding:10px 13px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#fff;font-family:var(--ff);font-size:13px;outline:none;transition:border-color .25s,box-shadow .25s;}
+.fi:focus,.fs:focus{border-color:rgba(var(--gRgb),.5);box-shadow:0 0 0 3px rgba(var(--gRgb),.1);}
+.fi::placeholder{color:rgba(255,255,255,.2);}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.btn-sub{width:100%;padding:12px;border-radius:11px;border:none;background:var(--green);color:#fff;font-family:var(--ff);font-size:14px;font-weight:700;cursor:pointer;transition:all .25s var(--spring);box-shadow:0 4px 16px rgba(var(--gRgb),.3);}
+.btn-sub:hover{transform:translateY(-2px);box-shadow:0 8px 26px rgba(var(--gRgb),.4);}
+
+/* TOGGLE SWITCH */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-info .tl-t{font-size:13px;color:#fff;margin-bottom:2px;}
+.toggle-info .tl-m{font-size:11px;color:rgba(255,255,255,.35);}
+.toggle{width:38px;height:22px;border-radius:11px;background:rgba(255,255,255,.1);cursor:pointer;position:relative;transition:background .3s;flex-shrink:0;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .3s var(--spring);}
+.toggle.on::after{transform:translateX(16px);}
+
+/* PROGRESS BAR */
+.prog-wrap{margin-top:5px;}
+.prog-track{height:5px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;margin-top:6px;}
+.prog-fill{height:100%;border-radius:5px;transition:width 1.2s var(--ease);}
+
+/* SCORE RING */
+.score-ring{display:flex;flex-direction:column;align-items:center;gap:4px;}
+.sr-num{font-family:var(--fh);font-size:40px;font-weight:400;}
+.sr-lbl{font-size:10px;color:rgba(255,255,255,.35);font-family:var(--fm);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* REFERRAL */
+.ref-code{background:rgba(var(--gRgb),.08);border:1px dashed rgba(var(--gRgb),.35);border-radius:12px;padding:14px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s;}
+.ref-code:hover{background:rgba(var(--gRgb),.14);}
+.ref-c{font-family:var(--fm);font-size:18px;font-weight:500;color:var(--green);letter-spacing:2px;flex:1;}
+.ref-act{font-size:11px;color:rgba(255,255,255,.4);}
+
+/* NOTIFICATION ITEM */
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.notif-item:last-child{border-bottom:none;}
+.notif-item.unread{background:rgba(var(--gRgb),.04);margin:0 -12px;padding:13px 12px;border-radius:10px;}
+.ni-dot2{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ni-body{flex:1;}
+.ni-title2{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;}
+.ni-desc{font-size:12px;color:rgba(255,255,255,.45);line-height:1.5;}
+.ni-time{font-size:10px;color:rgba(255,255,255,.25);font-family:var(--fm);margin-top:3px;}
+
+/* ACCORDION */
+.acc-item{border-bottom:1px solid rgba(255,255,255,.07);}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:14px 0;cursor:pointer;}
+.acc-head-t{font-size:14px;font-weight:600;color:#fff;}
+.acc-arr{font-size:12px;color:rgba(255,255,255,.4);transition:transform .25s;}
+.acc-item.open .acc-arr{transform:rotate(180deg);}
+.acc-body{display:none;padding:0 0 14px;font-size:13px;color:rgba(255,255,255,.55);line-height:1.65;}
+.acc-item.open .acc-body{display:block;}
+
+/* ══ AI ASSISTANT PANEL ══ */
+#ai-panel{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;justify-content:flex-end;padding:24px;pointer-events:none;}
+.ai-bd{position:absolute;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .4s var(--ease);}
+.ai-window{position:relative;z-index:2;width:420px;max-width:100%;height:580px;background:rgba(8,14,10,.96);backdrop-filter:blur(32px);-webkit-backdrop-filter:blur(32px);border:1px solid rgba(255,255,255,.1);border-radius:22px;display:flex;flex-direction:column;transform:translateY(30px) scale(.97);opacity:0;transition:transform .45s var(--spring),opacity .4s var(--ease);box-shadow:0 20px 60px rgba(0,0,0,.7);}
+#ai-panel.open{pointer-events:all;}
+#ai-panel.open .ai-bd{opacity:1;}
+#ai-panel.open .ai-window{transform:translateY(0) scale(1);opacity:1;}
+.ai-header{padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:11px;flex-shrink:0;}
+.ai-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#7c3aed);display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 0 16px rgba(var(--pRgb),.4);}
+.ai-title{font-size:14px;font-weight:700;color:#fff;}
+.ai-sub{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px;}
+.ai-close{margin-left:auto;width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.08);border:none;color:rgba(255,255,255,.5);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.ai-close:hover{background:rgba(255,255,255,.14);color:#fff;}
+.ai-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;}
+.ai-msgs::-webkit-scrollbar{width:2px;}
+.ai-msgs::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);}
+.ai-msg{max-width:88%;animation:msgIn .35s var(--spring);}
+@keyframes msgIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.ai-msg.user{align-self:flex-end;}
+.ai-msg.bot{align-self:flex-start;}
+.ai-bubble{padding:11px 14px;border-radius:16px;font-size:13px;line-height:1.6;}
+.ai-msg.user .ai-bubble{background:rgba(var(--gRgb),.18);border:1px solid rgba(var(--gRgb),.25);color:#d1fae5;}
+.ai-msg.bot .ai-bubble{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.85);}
+.ai-msg-time{font-size:9px;color:rgba(255,255,255,.25);margin-top:3px;font-family:var(--fm);}
+.ai-msg.user .ai-msg-time{text-align:right;}
+.ai-typing{display:flex;gap:5px;padding:11px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:16px;width:fit-content;animation:msgIn .35s var(--spring);}
+.ai-typing span{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);animation:typ 1.2s ease-in-out infinite;}
+.ai-typing span:nth-child(2){animation-delay:.2s;}
+.ai-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes typ{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-5px);opacity:1;}}
+.ai-quick{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;}
+.ai-q{background:rgba(var(--pRgb),.1);border:1px solid rgba(var(--pRgb),.2);color:rgba(255,255,255,.7);font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;cursor:pointer;transition:all .2s;font-family:var(--ff);}
+.ai-q:hover{background:rgba(var(--pRgb),.2);color:#fff;}
+.ai-input-row{padding:12px 14px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:8px;flex-shrink:0;}
+.ai-key-row{padding:8px 14px;border-top:1px solid rgba(255,255,255,.06);display:flex;gap:8px;flex-shrink:0;}
+.ai-key-in{flex:1;padding:8px 12px;border-radius:9px;border:1px solid rgba(var(--pRgb),.2);background:rgba(var(--pRgb),.06);color:#fff;font-family:var(--fm);font-size:11px;outline:none;transition:border-color .2s;}
+.ai-key-in:focus{border-color:rgba(var(--pRgb),.4);}
+.ai-key-in::placeholder{color:rgba(255,255,255,.2);}
+.ai-key-save{padding:8px 14px;border-radius:9px;border:none;background:rgba(var(--pRgb),.2);color:var(--purple);font-family:var(--ff);font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.ai-key-save:hover{background:rgba(var(--pRgb),.3);}
+.ai-in{flex:1;padding:10px 13px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-family:var(--ff);font-size:13px;outline:none;transition:border-color .25s;}
+.ai-in:focus{border-color:rgba(var(--pRgb),.4);}
+.ai-in::placeholder{color:rgba(255,255,255,.2);}
+.ai-send{width:38px;height:38px;border-radius:11px;border:none;background:var(--purple);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s var(--spring);flex-shrink:0;}
+.ai-send:hover{transform:scale(1.08);filter:brightness(1.1);}
+
+/* AI FAB */
+#ai-fab{position:fixed;bottom:28px;right:28px;z-index:150;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#7c3aed);border:none;color:#fff;font-size:22px;cursor:pointer;box-shadow:0 6px 24px rgba(var(--pRgb),.4),0 0 0 0 rgba(var(--pRgb),.3);display:none;align-items:center;justify-content:center;transition:all .25s var(--spring);animation:fabIn .5s var(--spring) .3s both;}
+@keyframes fabIn{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+#ai-fab.show{display:flex;}
+#ai-fab:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(var(--pRgb),.55);}
+#ai-fab .notif-dot{top:2px;right:2px;}
+
+/* SETTINGS PANEL */
+#settings-panel{position:fixed;inset:0;z-index:180;display:flex;align-items:center;justify-content:flex-end;pointer-events:none;}
+.set-bd{position:absolute;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .4s var(--ease);}
+.set-sh{position:relative;z-index:2;width:400px;height:100vh;background:rgba(8,14,10,.96);backdrop-filter:blur(32px);border-left:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .5s var(--ease);overflow-y:auto;}
+#settings-panel.open{pointer-events:all;}
+#settings-panel.open .set-bd{opacity:1;}
+#settings-panel.open .set-sh{transform:translateX(0);}
+.set-head{padding:22px 22px 16px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;}
+.set-title{font-family:var(--fh);font-size:22px;font-weight:400;color:#fff;}
+.set-body{padding:20px;}
+.set-sec{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);margin:20px 0 10px;font-family:var(--fm);}
+.set-sec:first-child{margin-top:0;}
+
+/* PROFILE CARD */
+.profile-card{background:linear-gradient(135deg,rgba(var(--gRgb),.08),rgba(var(--aRgb),.05));border:1.5px solid rgba(var(--gRgb),.2);border-radius:16px;padding:20px;display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.pf-av{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 18px rgba(var(--aRgb),.35);}
+.pf-name{font-family:var(--fh);font-size:20px;font-weight:400;color:#fff;}
+.pf-id{font-size:11px;color:rgba(255,255,255,.35);font-family:var(--fm);margin-top:2px;}
+.pf-edit{margin-left:auto;padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.12);background:transparent;color:rgba(255,255,255,.55);font-family:var(--ff);font-size:12px;cursor:pointer;transition:all .2s;}
+.pf-edit:hover{background:rgba(255,255,255,.07);color:#fff;}
+
+/* OB STEPS */
+.ob-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px;}
+.ob-s{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;transition:transform .25s var(--spring);}
+.ob-s:hover{transform:translateY(-4px);}
+.ob-n{width:32px;height:32px;border-radius:50%;background:rgba(var(--gRgb),.12);border:1.5px solid rgba(var(--gRgb),.25);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin:0 auto 9px;}
+.ob-t{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.ob-d{font-size:11px;color:rgba(255,255,255,.35);line-height:1.5;}
+
+@media(max-width:900px){.sg{grid-template-columns:1fr 1fr;}.tiers,.g3,.g65,.g2,.ob-steps{grid-template-columns:1fr;}.page{padding:18px 16px;}.sb{display:none;}.ib-stats{display:none;}.forecast{grid-template-columns:repeat(4,1fr);}}
+</style>
+</head>
+<body>
+<div id="cd"></div><div id="cr"></div>
+<canvas id="pcv"></canvas>
+<div id="toast-wrap"></div>
+
+<!-- ══ LANDING ══ -->
+<div id="landing">
+  <div class="land-bg"></div>
+  <div class="land-ov"></div>
+  <nav class="land-nav">
+    <div class="land-logo"><div class="land-gem">🛡️</div>GigShield</div>
+    <div class="land-nav-r">
+      <button class="gnb" onclick="openLogin()">Log In</button>
+      <button class="gnb g" onclick="openLogin('signup')">Get Protected →</button>
+    </div>
+  </nav>
+  <div class="land-feats">
+    <div class="fp"><span style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;"></span>Weather Coverage</div>
+    <div class="fp"><span style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;"></span>₹29/week</div>
+    <div class="fp"><span style="width:5px;height:5px;border-radius:50%;background:var(--purple);display:inline-block;"></span>AI Assistant</div>
+    <div class="fp"><span style="width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block;"></span>GPS Anti-Fraud</div>
+    <div class="fp"><span style="width:5px;height:5px;border-radius:50%;background:var(--blue);display:inline-block;"></span>Instant UPI</div>
+  </div>
+  <div class="land-hero">
+    <div class="land-ey"><div class="ldot"></div>Guidewire DEVTrails 2026</div>
+    <h1 class="land-t">Income protection<br>for <span class="hi">India's</span><br><em>delivery heroes</em></h1>
+    <p class="land-s">When the rain shuts down Mumbai, your payout arrives before it stops. Zero forms, instant UPI, AI-powered.</p>
+    <div class="land-ctas">
+      <button class="cta cta-p" onclick="openLogin('signup')">Start Coverage — ₹29/week</button>
+      <button class="cta cta-g" onclick="openLogin()">Partner Login</button>
+    </div>
+  </div>
+  <div class="land-ticker">
+    <div class="lt-item"><div class="lt-val">12M+</div><div class="lt-lbl">Gig Workers</div></div>
+    <div class="lt-item"><div class="lt-val">₹29</div><div class="lt-lbl">Starting/week</div></div>
+    <div class="lt-item"><div class="lt-val">&lt;90s</div><div class="lt-lbl">Payout Speed</div></div>
+    <div class="lt-item"><div class="lt-val">5</div><div class="lt-lbl">Trigger Types</div></div>
+  </div>
+  <div class="land-scr"><div class="scrb"></div><div class="scrl">Explore</div></div>
+  <div class="gbar">
+    <div class="gbar-in">
+      <div class="gbi" onclick="openLogin()"><div class="gbi-icon">🌧️</div><div><div class="gbi-lbl">Weather Triggers</div><div class="gbi-sub">IMD · CPCB · Live</div></div></div>
+      <div class="gbi" onclick="openLogin()"><div class="gbi-icon">⚡</div><div><div class="gbi-lbl">Instant Payout</div><div class="gbi-sub">UPI · &lt;90 seconds</div></div></div>
+      <div class="gbi" onclick="openLogin()"><div class="gbi-icon">🤖</div><div><div class="gbi-lbl">AI Assistant</div><div class="gbi-sub">Gemini · 24/7 help</div></div></div>
+      <div class="gbi" onclick="openLogin()"><div class="gbi-icon">🔍</div><div><div class="gbi-lbl">Fraud Guard</div><div class="gbi-sub">GPS · Motion · Trust</div></div></div>
+      <div class="gbi" onclick="openLogin()"><div class="gbi-icon">👥</div><div><div class="gbi-lbl">Refer & Earn</div><div class="gbi-sub">₹100 per referral</div></div></div>
+      <div class="gbcta" onclick="openLogin('signup')"><div class="gbcta-t">Get Coverage →</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGIN PANEL ══ -->
+<div id="login-panel">
+  <div class="lp-bd" onclick="closeLogin()"></div>
+  <div class="lp-sh">
+    <button class="lp-close" onclick="closeLogin()">✕</button>
+    <div class="lp-img">
+      <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&q=80&auto=format" alt="Delivery">
+      <div class="lp-img-ov"></div>
+      <div class="lp-img-tx"><div class="lp-img-h">GigShield</div><div class="lp-img-s">Protecting India's delivery partners</div></div>
+    </div>
+    <div class="lp-body">
+      <div class="lp-tabs">
+        <div class="lp-tab active" id="tab-login" onclick="switchTab('login')">Log In</div>
+        <div class="lp-tab" id="tab-signup" onclick="switchTab('signup')">Sign Up</div>
+        <div class="lp-tab" id="tab-demo" onclick="switchTab('demo')">Demo</div>
+      </div>
+      <!-- LOGIN -->
+      <div class="lp-tc active" id="tc-login">
+        <div class="fg"><label class="lp-lbl">Phone Number</label><input class="lp-in" id="login-phone" type="tel" placeholder="+91 98765 43210"></div>
+        <div class="fg"><label class="lp-lbl">Password</label><input class="lp-in" id="login-pass" type="password" placeholder="Enter password"></div>
+        <button class="lp-sub" onclick="doLogin()">Log In to GigShield</button>
+        <div class="lp-div"><span>or</span></div>
+        <div style="display:flex;gap:8px;">
+          <button style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);font-family:var(--ff);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;" onclick="doLogin()">🇮🇳 OTP Login</button>
+          <button style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);font-family:var(--ff);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;" onclick="doLogin()">📱 Partner ID</button>
+        </div>
+        <div style="text-align:center;margin-top:16px;font-size:12px;color:rgba(255,255,255,.28);">Don't have an account? <span style="color:var(--green);cursor:pointer;" onclick="switchTab('signup')">Sign up free</span></div>
+      </div>
+      <!-- SIGNUP -->
+      <div class="lp-tc" id="tc-signup">
+        <div style="font-size:11px;color:rgba(255,255,255,.35);margin-bottom:11px;">Choose your platform:</div>
+        <div class="wt-grid">
+          <div class="wt sel" onclick="selWT(this)" data-platform="Zomato"><div class="wt-i">🛵</div><div class="wt-n">Zomato</div><div class="wt-s">Food delivery</div></div>
+          <div class="wt" onclick="selWT(this)" data-platform="Swiggy"><div class="wt-i">🏍️</div><div class="wt-n">Swiggy</div><div class="wt-s">Food delivery</div></div>
+          <div class="wt" onclick="selWT(this)" data-platform="Blinkit"><div class="wt-i">🚴</div><div class="wt-n">Blinkit</div><div class="wt-s">Grocery</div></div>
+          <div class="wt" onclick="selWT(this)" data-platform="Amazon"><div class="wt-i">📦</div><div class="wt-n">Amazon</div><div class="wt-s">E-commerce</div></div>
+        </div>
+        <div class="fr2">
+          <div class="fg"><label class="lp-lbl">Full Name</label><input class="lp-in" id="su-name" placeholder="Rajan Kumar"></div>
+          <div class="fg"><label class="lp-lbl">Phone</label><input class="lp-in" id="su-phone" type="tel" placeholder="+91 98765 43210"></div>
+        </div>
+        <div class="fg"><label class="lp-lbl">Partner ID</label><input class="lp-in" id="su-pid" placeholder="ZOM-DEL-2024-XXXXX"></div>
+        <div class="fr2">
+          <div class="fg"><label class="lp-lbl">Zone</label>
+            <select class="lp-in fs" id="su-zone">
+              <option value="Dharavi">Dharavi, Mumbai</option>
+              <option value="Kurla">Kurla, Mumbai</option>
+              <option value="Andheri">Andheri East</option>
+              <option value="Bandra">Bandra, Mumbai</option>
+              <option value="Thane">Thane</option>
+            </select>
+          </div>
+          <div class="fg"><label class="lp-lbl">UPI ID</label><input class="lp-in" id="su-upi" placeholder="yourname@upi"></div>
+        </div>
+        <div class="fg"><label class="lp-lbl">Password</label><input class="lp-in" id="su-pass" type="password" placeholder="Create password"></div>
+        <button class="lp-sub" onclick="doSignup()">Create Account & Get Coverage</button>
+        <div style="text-align:center;margin-top:12px;font-size:11px;color:rgba(255,255,255,.2);">Coverage activates instantly. ₹29/week auto-debit.</div>
+      </div>
+      <!-- DEMO -->
+      <div class="lp-tc" id="tc-demo">
+        <div style="background:rgba(var(--bRgb),.08);border:1px solid rgba(var(--bRgb),.2);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;">Try a pre-filled demo account to explore all features without signing up.</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button style="padding:13px 16px;border-radius:12px;border:1.5px solid rgba(var(--gRgb),.3);background:rgba(var(--gRgb),.08);color:#86efac;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:all .2s;" onclick="loadDemo('worker')">
+            <span style="font-size:22px;">🏍️</span><div><div>Delivery Partner View</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Rajan Kumar · Zomato · Dharavi</div></div>
+          </button>
+          <button style="padding:13px 16px;border-radius:12px;border:1.5px solid rgba(var(--bRgb),.3);background:rgba(var(--bRgb),.08);color:#93c5fd;font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:all .2s;" onclick="loadDemo('admin')">
+            <span style="font-size:22px;">📊</span><div><div>Admin / Insurer View</div><div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;">Full analytics + fraud monitor</div></div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ AI ASSISTANT ══ -->
+<div id="ai-panel">
+  <div class="ai-bd" onclick="toggleAI()"></div>
+  <div class="ai-window">
+    <div class="ai-header">
+      <div class="ai-av">🤖</div>
+      <div><div class="ai-title">GigShield AI</div><div class="ai-sub">Powered by Gemini · Always here</div></div>
+      <button class="ai-close" onclick="toggleAI()">✕</button>
+    </div>
+    <div class="ai-msgs" id="ai-msgs"></div>
+    <div class="ai-quick" id="ai-quick">
+      <div class="ai-q" onclick="askAI('What does my policy cover?')">What am I covered for?</div>
+      <div class="ai-q" onclick="askAI('When will my payout arrive?')">When does payout arrive?</div>
+      <div class="ai-q" onclick="askAI('How is my premium calculated?')">How is my premium set?</div>
+      <div class="ai-q" onclick="askAI('What triggers a claim?')">What triggers a claim?</div>
+    </div>
+    <div class="ai-key-row">
+      <input class="ai-key-in" id="ai-key" placeholder="Gemini API key (AIzaSy…)" type="password">
+      <button class="ai-key-save" onclick="saveAIKey()">Save Key</button>
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-in" id="ai-in" placeholder="Ask anything about your policy…" onkeydown="if(event.key==='Enter')sendAI()">
+      <button class="ai-send" onclick="sendAI()">↑</button>
+    </div>
+  </div>
+</div>
+
+<button id="ai-fab" onclick="toggleAI()">🤖<div class="notif-dot"></div></button>
+
+<!-- ══ SETTINGS PANEL ══ -->
+<div id="settings-panel">
+  <div class="set-bd" onclick="closeSettings()"></div>
+  <div class="set-sh">
+    <div class="set-head">
+      <div class="set-title">Settings</div>
+      <button class="ai-close" onclick="closeSettings()">✕</button>
+    </div>
+    <div class="set-body">
+      <div class="profile-card" id="set-profile">
+        <div class="pf-av">🏍️</div>
+        <div><div class="pf-name" id="set-pf-name">Rajan Kumar</div><div class="pf-id" id="set-pf-id">ZOM-DEL-2024-08421 · Dharavi</div></div>
+        <button class="pf-edit" onclick="showToast('Profile editing coming soon!','info')">Edit</button>
+      </div>
+
+      <div class="set-sec">Coverage</div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Auto-Renew Policy</div><div class="tl-m">Weekly UPI auto-debit</div></div><div class="toggle on" id="tog-renew" onclick="toggleSet('renew')"></div></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Trigger Alerts</div><div class="tl-m">Notify when disruption detected</div></div><div class="toggle on" id="tog-alerts" onclick="toggleSet('alerts')"></div></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Payout Notifications</div><div class="tl-m">SMS + in-app when payout processes</div></div><div class="toggle on" id="tog-notif" onclick="toggleSet('notif')"></div></div>
+
+      <div class="set-sec">Security</div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Biometric Login</div><div class="tl-m">Use fingerprint / face ID</div></div><div class="toggle" id="tog-bio" onclick="toggleSet('bio')"></div></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Two-Factor Auth</div><div class="tl-m">OTP on login</div></div><div class="toggle on" id="tog-2fa" onclick="toggleSet('2fa')"></div></div>
+
+      <div class="set-sec">AI Assistant</div>
+      <div class="fg"><label class="fl">Gemini API Key</label><input class="fi" id="set-ai-key" type="password" placeholder="AIzaSy…"><div style="font-size:11px;color:rgba(255,255,255,.25);margin-top:5px;">Get free key at aistudio.google.com/apikey</div></div>
+      <button style="width:100%;padding:10px;border-radius:10px;border:1.5px solid rgba(var(--pRgb),.3);background:rgba(var(--pRgb),.08);color:var(--purple);font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:14px;" onclick="saveAIKeyFromSettings()">Save API Key</button>
+
+      <div class="set-sec">Preferences</div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Dark Mode</div><div class="tl-m">Always on for this device</div></div><div class="toggle on" id="tog-dark"></div></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Weekly Summary</div><div class="tl-m">Email report every Sunday</div></div><div class="toggle" id="tog-sum" onclick="toggleSet('sum')"></div></div>
+      <div class="toggle-row"><div class="toggle-info"><div class="tl-t">Fraud Alerts</div><div class="tl-m">Alert if suspicious claim detected</div></div><div class="toggle on" id="tog-fraud" onclick="toggleSet('fraud')"></div></div>
+
+      <div class="set-sec">Danger Zone</div>
+      <button style="width:100%;padding:10px;border-radius:10px;border:1.5px solid rgba(var(--rRgb),.25);background:rgba(var(--rRgb),.06);color:var(--red);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px;" onclick="doLogout()">Log Out</button>
+      <button style="width:100%;padding:10px;border-radius:10px;border:1.5px solid rgba(var(--rRgb),.15);background:transparent;color:rgba(var(--rRgb),.6);font-family:var(--ff);font-size:12px;cursor:pointer;" onclick="showToast('Account deletion requires verification via Support','warn')">Delete Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sb">
+    <div class="sb-top">
+      <div class="sb-logo"><div class="sb-gem">🛡️</div><div class="sb-nm">GigShield</div></div>
+      <div class="sb-tg">DEVTrails 2026</div>
+    </div>
+    <div class="sb-worker" onclick="goPage('profile')">
+      <div class="sb-av">🏍️</div>
+      <div>
+        <div class="sb-wn" id="sb-wname">Rajan Kumar</div>
+        <div class="sb-ws"><div class="sb-wd"></div><span id="sb-wplat">Zomato · Active</span></div>
+      </div>
+      <div class="sb-plan" id="sb-plan">STANDARD</div>
+    </div>
+    <div class="nav-w">
+      <div class="nsec">Main</div>
+      <div class="ni active" onclick="goPage('dashboard')"><div class="ni-i">📊</div><div class="ni-l">Dashboard</div></div>
+      <div class="ni" onclick="goPage('policy')"><div class="ni-i">🛡️</div><div class="ni-l">My Policy</div></div>
+      <div class="ni" onclick="goPage('claims')"><div class="ni-i">💰</div><div class="ni-l">Claims & Payouts</div><div class="ni-b" id="claims-badge">1</div></div>
+      <div class="ni" onclick="goPage('notifications')"><div class="ni-i">🔔</div><div class="ni-l">Notifications</div><div class="ni-b" id="notif-badge">3</div></div>
+
+      <div class="nsec" style="margin-top:7px;">Enrollment</div>
+      <div class="ni" onclick="goPage('onboard')"><div class="ni-i">✨</div><div class="ni-l">Get Coverage</div></div>
+      <div class="ni" onclick="goPage('tiers')"><div class="ni-i">📋</div><div class="ni-l">Coverage Plans</div></div>
+      <div class="ni" onclick="goPage('referral')"><div class="ni-i">🎁</div><div class="ni-l">Refer & Earn</div></div>
+
+      <div class="nsec" style="margin-top:7px;">Admin / Insurer</div>
+      <div class="ni" onclick="goPage('fraud')"><div class="ni-i">🔍</div><div class="ni-l">Fraud Monitor</div></div>
+      <div class="ni" onclick="goPage('analytics')"><div class="ni-i">📈</div><div class="ni-l">Analytics</div></div>
+      <div class="ni" onclick="goPage('weather')"><div class="ni-i">🌦️</div><div class="ni-l">Weather Monitor</div></div>
+
+      <div class="nsec" style="margin-top:7px;">Tools</div>
+      <div class="ni" onclick="goPage('simulator')"><div class="ni-i">🧮</div><div class="ni-l">Earnings Simulator</div></div>
+      <div class="ni" onclick="goPage('appeal')"><div class="ni-i">⚖️</div><div class="ni-l">Claim Appeal</div></div>
+      <div class="ni" onclick="goPage('community')"><div class="ni-i">👥</div><div class="ni-l">Community</div></div>
+      <div class="nsec" style="margin-top:7px;">Account</div>
+      <div class="ni" onclick="goPage('profile')"><div class="ni-i">👤</div><div class="ni-l">Profile</div></div>
+      <div class="ni" onclick="goPage('faq')"><div class="ni-i">❓</div><div class="ni-l">FAQ & Help</div></div>
+    </div>
+    <div class="sb-weather" id="sb-weather-widget">
+      <div class="sw-r">
+        <div class="sw-l"><span style="font-size:21px;" id="sw-icon">⛈️</span><div><div class="sw-t" id="sw-temp">38°C</div><div class="sw-d" id="sw-loc">Mumbai · Dharavi</div></div></div>
+        <div class="sw-b br" id="sw-badge">RED ALERT</div>
+      </div>
+    </div>
+    <div class="sb-ft">
+      <button class="sb-bk" onclick="exitApp()">← Home</button>
+      <button class="sb-set" onclick="openSettings()" title="Settings">⚙️</button>
+      <button class="sb-set" onclick="toggleAI()" title="AI Assistant" style="background:rgba(var(--pRgb),.1);border-color:rgba(var(--pRgb),.2);">🤖</button>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main-c">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="pg-dashboard">
+      <div class="ib" style="height:230px;">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=85&auto=format" alt="Mumbai">
+        <div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9) 0%,rgba(6,10,8,.35) 65%,transparent 100%);"></div>
+        <div class="ib-c"><div class="ib-tag">Live · 20 March 2026 · Mumbai</div><div class="ib-h">Good morning, <em id="dash-name">Rajan</em> 👋</div><div class="ib-p">Standard Shield triggered. ₹1,200 processing to your UPI.</div></div>
+        <div class="ib-stats"><div class="ibs"><div class="ibs-l">Protected</div><div class="ibs-v">₹4,800</div></div><div class="ibs"><div class="ibs-l">Trust Score</div><div class="ibs-v">92/100</div></div><div class="ibs"><div class="ibs-l">Alert</div><div class="ibs-v">Red Rain</div></div></div>
+      </div>
+      <div class="ab ab-r">
+        <div class="ab-ico">🚨</div>
+        <div><div class="ab-t" style="color:var(--red);">Parametric Trigger — Heavy Rain Red Alert</div><div class="ab-b2">IMD Red Alert for Mumbai. Standard Shield auto-triggered. <strong>₹1,200</strong> processing to your UPI in ~90s.</div></div>
+        <button class="ab-btn" style="background:var(--red);color:#fff;" onclick="goPage('claims')">View →</button>
+      </div>
+      <div class="sg">
+        <div class="sc g" onclick="goPage('claims')"><div class="sc-i">💸</div><div class="sc-v" id="stat-protected">₹4,800</div><div class="sc-l">Protected This Month</div><div class="sc-d du">↑ 3 payouts</div></div>
+        <div class="sc o" onclick="goPage('policy')"><div class="sc-i">🗓️</div><div class="sc-v" id="stat-premium">₹59</div><div class="sc-l">Weekly Premium</div><div class="sc-d" style="color:rgba(255,255,255,.3);">Auto-debit · Friday</div></div>
+        <div class="sc b" onclick="goPage('profile')"><div class="sc-i">🏅</div><div class="sc-v">92</div><div class="sc-l">Trust Score</div><div class="sc-d du">Trust Badge ✓</div></div>
+        <div class="sc r"><div class="sc-i">⚡</div><div class="sc-v">1</div><div class="sc-l">Active Triggers</div><div class="sc-d dd">Red Rain · Live</div></div>
+      </div>
+      <div class="g65">
+        <div>
+          <div class="cov-h">
+            <div class="ch">
+              <div class="ch-row"><div><div class="ch-lbl">Active Policy</div><div class="ch-tier" id="dash-tier">Standard Shield</div></div><div class="ch-live"><div class="ch-ld"></div>LIVE</div></div>
+              <div class="ch-amt" id="dash-payout">₹1,200</div>
+              <div class="ch-al">Max payout per trigger</div>
+              <div class="ch-bar"><div class="ch-bl"><span>Week 3 of 4</span><span>₹4,800 total</span></div><div class="ch-trk"><div class="ch-fill" id="cpb" style="width:0%"></div></div></div>
+              <div class="ch-meta">
+                <div><div class="ch-mv" id="dash-prem">₹59</div><div class="ch-ml">Weekly premium</div></div>
+                <div><div class="ch-mv">3</div><div class="ch-ml">Payouts this month</div></div>
+                <div><div class="ch-mv">27 Mar</div><div class="ch-ml">Next renewal</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--green),transparent);"></div>
+          <div class="gc-t">Zone Risk Map · Live</div>
+          <div class="rmap">
+            <div class="rmap-g"></div>
+            <div class="mz mz-r" style="width:84px;height:84px;top:14px;left:20px;">DHARAVI<br>RED</div>
+            <div class="mz mz-r" style="width:66px;height:66px;top:30px;left:96px;">KURLA</div>
+            <div class="mz mz-o" style="width:72px;height:72px;top:68px;right:36px;">ANDHERI</div>
+            <div class="mz mz-g" style="width:58px;height:58px;bottom:14px;left:162px;">BKC</div>
+            <div class="mw" style="top:46px;left:56px;"></div>
+            <div class="rm-leg"><div class="rm-li"><div class="rm-dot" style="background:#ff9090;"></div>Red</div><div class="rm-li"><div class="rm-dot" style="background:#fbbf24;"></div>Orange</div><div class="rm-li"><div class="rm-dot" style="background:#86efac;"></div>Clear</div><div class="rm-li"><div class="rm-dot" style="background:var(--amber);"></div>You</div></div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,.3);">🔴 Dharavi under Red Alert — payout processing.</div>
+        </div>
+      </div>
+      <div class="gc">
+        <div class="gc-bar" style="background:linear-gradient(90deg,var(--green),var(--amber),transparent);"></div>
+        <div class="gc-t">Recent Trigger Events</div>
+        <div class="tl">
+          <div class="tli"><div class="tl-dot" style="background:var(--green);box-shadow:0 0 7px rgba(var(--gRgb),.5);"></div><div class="tl-b"><div class="tl-t">Heavy Rain Red Alert — Mumbai</div><div class="tl-m"><span class="pill pr">🌧️ Extreme Rain</span><span>IMD · 20 Mar 06:14</span><span>3h 24m</span></div></div><div class="tl-a">+₹1,200</div></div>
+          <div class="tli"><div class="tl-dot" style="background:var(--green);"></div><div class="tl-b"><div class="tl-t">Severe AQI — Mumbai Metro</div><div class="tl-m"><span class="pill po">💨 AQI 428</span><span>CPCB · 15 Mar</span><span>2h 10m</span></div></div><div class="tl-a">+₹840</div></div>
+          <div class="tli"><div class="tl-dot" style="background:var(--green);"></div><div class="tl-b"><div class="tl-t">Zomato Platform Outage</div><div class="tl-m"><span class="pill pp">📱 52min downtime</span><span>12 Mar</span></div></div><div class="tl-a">+₹720</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="page" id="pg-notifications">
+      <div class="ib" style="height:160px;"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&q=80&auto=format" alt="Notif"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Notifications</div><div class="ib-h">Your alerts & updates</div></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;gap:8px;">
+          <button style="padding:7px 16px;border-radius:9px;border:1.5px solid rgba(var(--gRgb),.3);background:rgba(var(--gRgb),.1);color:var(--green);font-family:var(--ff);font-size:12px;font-weight:600;cursor:pointer;" onclick="filterNotifs('all')">All</button>
+          <button style="padding:7px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.5);font-family:var(--ff);font-size:12px;cursor:pointer;" onclick="filterNotifs('payout')">Payouts</button>
+          <button style="padding:7px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.5);font-family:var(--ff);font-size:12px;cursor:pointer;" onclick="filterNotifs('alert')">Alerts</button>
+          <button style="padding:7px 16px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.5);font-family:var(--ff);font-size:12px;cursor:pointer;" onclick="filterNotifs('system')">System</button>
+        </div>
+        <button style="padding:7px 14px;border-radius:9px;border:none;background:transparent;color:rgba(255,255,255,.4);font-family:var(--ff);font-size:12px;cursor:pointer;" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <div class="gc" id="notif-list">
+        <div class="notif-item unread"><div class="ni-dot2" style="background:var(--red);box-shadow:0 0 6px rgba(var(--rRgb),.5);"></div><div class="ni-body"><div class="ni-title2">🚨 Red Alert Triggered — Payout Processing</div><div class="ni-desc">Heavy rain red alert detected in Dharavi zone. ₹1,200 payout initiated to rajan.kumar@upi.</div><div class="ni-time">2 minutes ago</div></div></div>
+        <div class="notif-item unread"><div class="ni-dot2" style="background:var(--green);"></div><div class="ni-body"><div class="ni-title2">✅ Policy Renewed Successfully</div><div class="ni-desc">Standard Shield renewed for week starting 20 Mar. ₹59 debited from your UPI.</div><div class="ni-time">6 hours ago</div></div></div>
+        <div class="notif-item unread"><div class="ni-dot2" style="background:var(--purple);"></div><div class="ni-body"><div class="ni-title2">🤖 AI Insight: High Risk Week Ahead</div><div class="ni-desc">AI predicts elevated rainfall Sunday–Monday. Consider upgrading to Pro Shield for higher payout coverage.</div><div class="ni-time">1 day ago</div></div></div>
+        <div class="notif-item"><div class="ni-dot2" style="background:var(--amber);"></div><div class="ni-body"><div class="ni-title2">💰 Payout Received — ₹840</div><div class="ni-desc">AQI trigger payout processed. ₹840 credited to rajan.kumar@upi.</div><div class="ni-time">5 days ago</div></div></div>
+        <div class="notif-item"><div class="ni-dot2" style="background:var(--blue);"></div><div class="ni-body"><div class="ni-title2">🎁 Referral Bonus Earned</div><div class="ni-desc">Your friend Priya signed up using your code GS-RJ8421. ₹100 bonus added to your account.</div><div class="ni-time">1 week ago</div></div></div>
+        <div class="notif-item"><div class="ni-dot2" style="background:var(--green);"></div><div class="ni-body"><div class="ni-title2">🏅 Trust Badge Unlocked</div><div class="ni-desc">Congratulations! 3 months of clean claim history. You now get auto-approved payouts.</div><div class="ni-time">2 weeks ago</div></div></div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="pg-profile">
+      <div class="ib" style="height:170px;"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&q=80&auto=format" alt="Worker"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Account</div><div class="ib-h">My Profile</div></div></div>
+      <div class="g2">
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--amber),transparent);"></div>
+          <div class="gc-t">Personal Info</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+            <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--amber),#d97706);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 18px rgba(var(--aRgb),.3);">🏍️</div>
+            <div><div style="font-family:var(--fh);font-size:22px;color:#fff;" id="pf-name2">Rajan Kumar</div><div style="font-size:12px;color:rgba(255,255,255,.4);margin-top:3px;" id="pf-id2">ZOM-DEL-2024-08421</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0;">
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;"><span style="color:rgba(255,255,255,.35);">Platform</span><span style="font-weight:600;" id="pf-platform">Zomato</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;"><span style="color:rgba(255,255,255,.35);">Zone</span><span style="font-weight:600;" id="pf-zone">Dharavi, Mumbai</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;"><span style="color:rgba(255,255,255,.35);">Phone</span><span style="font-weight:600;" id="pf-phone">+91 98765 43210</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:12px;"><span style="color:rgba(255,255,255,.35);">UPI ID</span><span style="font-weight:600;" id="pf-upi">rajan.kumar@upi</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="gc" style="margin-bottom:12px;">
+            <div class="gc-t">Trust Score</div>
+            <div style="text-align:center;padding:14px 0;">
+              <div class="fr">
+                <svg viewBox="0 0 96 96" width="96" height="96"><circle cx="48" cy="48" r="36" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/><circle cx="48" cy="48" r="36" fill="none" stroke="var(--green)" stroke-width="10" stroke-dasharray="206 226" stroke-linecap="round"/></svg>
+                <div class="fr-c"><div class="fr-n" style="color:var(--green);">92</div><div class="fr-l">TRUST</div></div>
+              </div>
+              <span class="pill pg" style="font-size:11px;">🏅 Trust Badge Holder</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px;">
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;"><span>Claim History</span><span>Clean 3 months</span></div><div class="prog-track"><div class="prog-fill" style="width:92%;background:linear-gradient(90deg,var(--green),#4ade80);"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;"><span>Identity Verified</span><span>100%</span></div><div class="prog-track"><div class="prog-fill" style="width:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);"></div></div></div>
+              <div><div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;"><span>Platform Activity</span><span>Active</span></div><div class="prog-track"><div class="prog-fill" style="width:85%;background:linear-gradient(90deg,var(--amber),#fbbf24);"></div></div></div>
+            </div>
+          </div>
+          <div class="gc">
+            <div class="gc-t">Membership Since</div>
+            <div style="font-family:var(--fh);font-size:28px;color:#fff;letter-spacing:-.5px;">Jan 2026</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">3 months · 12 weeks covered</div>
+            <div style="margin-top:12px;display:flex;gap:10px;">
+              <div style="flex:1;text-align:center;background:rgba(255,255,255,.04);border-radius:10px;padding:10px;"><div style="font-family:var(--fh);font-size:20px;color:var(--green);">₹14,400</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;">Total Protected</div></div>
+              <div style="flex:1;text-align:center;background:rgba(255,255,255,.04);border-radius:10px;padding:10px;"><div style="font-family:var(--fh);font-size:20px;color:var(--amber);">9</div><div style="font-size:10px;color:rgba(255,255,255,.3);margin-top:2px;">Total Payouts</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WEATHER MONITOR -->
+    <div class="page" id="pg-weather">
+      <div class="ib" style="height:180px;"><img src="https://images.unsplash.com/photo-1504386106331-3e4e71712b38?w=1600&q=80&auto=format" alt="Weather"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Live Weather Intelligence</div><div class="ib-h">Mumbai Zone Monitor</div></div></div>
+      <div class="sg">
+        <div class="sc r"><div class="sc-i">🌧️</div><div class="sc-v">85mm/hr</div><div class="sc-l">Rainfall Rate</div><div class="sc-d dd">Red Alert Active</div></div>
+        <div class="sc o"><div class="sc-i">🌡️</div><div class="sc-v">38°C</div><div class="sc-l">Temperature</div><div class="sc-d" style="color:rgba(255,255,255,.3);">Feels like 44°C</div></div>
+        <div class="sc b"><div class="sc-i">💨</div><div class="sc-v">AQI 182</div><div class="sc-l">Air Quality</div><div class="sc-d po">Moderate</div></div>
+        <div class="sc g"><div class="sc-i">👁️</div><div class="sc-v">200m</div><div class="sc-l">Visibility</div><div class="sc-d dd">Very Poor</div></div>
+      </div>
+      <div class="g2" style="margin-bottom:14px;">
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--red),transparent);"></div>
+          <div class="gc-t">Active Alerts — Mumbai</div>
+          <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px;">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;background:rgba(var(--rRgb),.08);border-radius:11px;border:1px solid rgba(var(--rRgb),.2);">
+              <span style="font-size:22px;">🌧️</span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#fff;">Heavy Rain — RED ALERT</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Dharavi, Kurla, Sion · Active since 06:14</div></div>
+              <span class="pill pr">LIVE</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;background:rgba(var(--aRgb),.07);border-radius:11px;border:1px solid rgba(var(--aRgb),.2);">
+              <span style="font-size:22px;">🌬️</span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:700;color:#fff;">High Wind — ORANGE</div><div style="font-size:11px;color:rgba(255,255,255,.4);">Coastal zones · 65 km/h gusts</div></div>
+              <span class="pill po">WATCH</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;background:rgba(255,255,255,.04);border-radius:11px;border:1px solid rgba(255,255,255,.07);">
+              <span style="font-size:22px;">☀️</span>
+              <div style="flex:1;"><div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.7);">No Heat Alert</div><div style="font-size:11px;color:rgba(255,255,255,.35);">Temperature within safe range</div></div>
+              <span class="pill pg">CLEAR</span>
+            </div>
+          </div>
+        </div>
+        <div class="gc">
+          <div class="gc-t">Data Sources</div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);"><span style="font-size:16px;">🇮🇳</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">IMD India</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Weather · Rain alerts</div></div><span class="pill pg">LIVE</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);"><span style="font-size:16px;">💨</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">CPCB AQI Monitor</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Air quality index</div></div><span class="pill pg">LIVE</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);"><span style="font-size:16px;">🌍</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">OpenWeatherMap</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Global weather API</div></div><span class="pill pg">LIVE</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.06);"><span style="font-size:16px;">🏛️</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Govt Notifications</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Curfew · Section 144</div></div><span class="pill pb">POLLING</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="gc">
+        <div class="gc-bar" style="background:linear-gradient(90deg,var(--blue),transparent);"></div>
+        <div class="gc-t" style="margin-bottom:14px;">7-Day Forecast</div>
+        <div class="forecast">
+          <div class="fd" style="border-color:rgba(var(--rRgb),.25);background:rgba(var(--rRgb),.06);"><div class="fd-i">⛈️</div><div class="fd-n">TODAY</div><div class="fd-r" style="color:var(--red);">RED</div><div class="fd-a">85mm</div></div>
+          <div class="fd" style="border-color:rgba(var(--rRgb),.25);background:rgba(var(--rRgb),.06);"><div class="fd-i">🌧️</div><div class="fd-n">SAT</div><div class="fd-r" style="color:var(--red);">HIGH</div><div class="fd-a">60mm</div></div>
+          <div class="fd" style="border-color:rgba(var(--aRgb),.2);background:rgba(var(--aRgb),.04);"><div class="fd-i">🌦️</div><div class="fd-n">SUN</div><div class="fd-r" style="color:var(--amber);">MED</div><div class="fd-a">28mm</div></div>
+          <div class="fd" style="border-color:rgba(var(--aRgb),.2);background:rgba(var(--aRgb),.04);"><div class="fd-i">⛅</div><div class="fd-n">MON</div><div class="fd-r" style="color:var(--amber);">MED</div><div class="fd-a">15mm</div></div>
+          <div class="fd" style="border-color:rgba(var(--gRgb),.2);background:rgba(var(--gRgb),.04);"><div class="fd-i">🌤️</div><div class="fd-n">TUE</div><div class="fd-r" style="color:var(--green);">LOW</div><div class="fd-a">4mm</div></div>
+          <div class="fd" style="border-color:rgba(var(--gRgb),.2);background:rgba(var(--gRgb),.04);"><div class="fd-i">☀️</div><div class="fd-n">WED</div><div class="fd-r" style="color:var(--green);">CLEAR</div><div class="fd-a">0mm</div></div>
+          <div class="fd" style="border-color:rgba(var(--gRgb),.2);background:rgba(var(--gRgb),.04);"><div class="fd-i">☀️</div><div class="fd-n">THU</div><div class="fd-r" style="color:var(--green);">CLEAR</div><div class="fd-a">0mm</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REFERRAL -->
+    <div class="page" id="pg-referral">
+      <div class="ib" style="height:170px;"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&q=80&auto=format" alt="Referral"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Refer & Earn</div><div class="ib-h">Share GigShield.<br><em>Earn ₹100 per signup.</em></div></div></div>
+      <div class="g2">
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--amber),transparent);"></div>
+          <div class="gc-t">Your Referral Code</div>
+          <div class="ref-code" onclick="copyRef()" style="margin:12px 0;">
+            <div class="ref-c" id="ref-code-text">GS-RJ8421</div>
+            <div class="ref-act">Tap to copy</div>
+            <span style="font-size:18px;">📋</span>
+          </div>
+          <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;">Share your code with other delivery partners. When they sign up and complete their first week, you both get <strong style="color:var(--amber);">₹100 bonus</strong>.</div>
+          <div style="margin-top:14px;display:flex;gap:8px;">
+            <button style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(var(--gRgb),.3);background:rgba(var(--gRgb),.08);color:var(--green);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer;" onclick="showToast('WhatsApp share link copied!','success')">📱 Share on WhatsApp</button>
+            <button style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(var(--bRgb),.3);background:rgba(var(--bRgb),.08);color:var(--blue);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer;" onclick="showToast('Invite link copied to clipboard!','info')">🔗 Copy Link</button>
+          </div>
+        </div>
+        <div>
+          <div class="gc" style="margin-bottom:12px;">
+            <div class="gc-t">Your Earnings</div>
+            <div style="font-family:var(--fh);font-size:36px;color:var(--amber);letter-spacing:-1px;">₹300</div>
+            <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:3px;">3 successful referrals</div>
+            <div style="margin-top:12px;background:rgba(var(--aRgb),.08);border:1px solid rgba(var(--aRgb),.2);border-radius:10px;padding:12px 14px;">
+              <div style="font-size:12px;color:var(--amber);font-weight:700;">Next payout: ₹100</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;">Priya's first week completes in 3 days</div>
+            </div>
+          </div>
+          <div class="gc">
+            <div class="gc-t">Recent Referrals</div>
+            <table class="dt" style="margin-top:8px;"><thead><tr><th>Name</th><th>Joined</th><th>Status</th><th>Bonus</th></tr></thead><tbody>
+              <tr><td>Priya S.</td><td>18 Mar</td><td><span class="pill pg">Active</span></td><td style="color:var(--amber);">Pending</td></tr>
+              <tr><td>Arun K.</td><td>10 Mar</td><td><span class="pill pg">Active</span></td><td style="color:var(--green);">₹100</td></tr>
+              <tr><td>Meena R.</td><td>2 Mar</td><td><span class="pill pg">Active</span></td><td style="color:var(--green);">₹100</td></tr>
+            </tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLAIMS -->
+    <div class="page" id="pg-claims">
+      <div class="ib" style="height:170px;"><img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=1600&q=80&auto=format" alt="Pay"><div class="ib-ov" style="background:linear-gradient(135deg,rgba(6,10,8,.92),rgba(6,10,8,.4));"></div><div class="ib-c"><div class="ib-tag">Claims & Payouts</div><div class="ib-h">Zero-touch. <em>Instant.</em></div></div></div>
+      <div class="gc" style="margin-bottom:13px;border-color:rgba(var(--gRgb),.18);">
+        <div class="gc-bar" style="background:linear-gradient(90deg,var(--green),transparent);"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;"><div><div style="font-size:10px;color:rgba(255,255,255,.3);font-family:var(--fm);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;">Active Claim · CLM-2026-00341</div><div style="font-family:var(--fh);font-size:20px;color:#fff;">Heavy Rain Red Alert — 20 Mar 2026</div></div><span class="pill po" style="font-size:11px;padding:5px 13px;">⏳ Processing</span></div>
+        <div class="cf"><div class="cfs done"><div class="cfs-d">✓</div><div class="cfs-l">Detected</div></div><div class="cfs done"><div class="cfs-d">✓</div><div class="cfs-l">Fraud Check</div></div><div class="cfs active"><div class="cfs-d">3</div><div class="cfs-l">Processing</div></div><div class="cfs pend"><div class="cfs-d">4</div><div class="cfs-l">UPI Transfer</div></div></div>
+        <div class="paycrd"><div class="pay-amt">₹1,200</div><div class="pay-l">Arriving within 90 seconds</div><div class="pay-upi"><span style="font-size:17px;">📲</span><span id="claim-upi">rajan.kumar@upi</span><span style="margin-left:auto;color:var(--green);font-weight:600;">Verified ✓</span></div></div>
+        <div style="margin-top:11px;padding:11px 14px;background:rgba(var(--gRgb),.06);border:1px solid rgba(var(--gRgb),.15);border-radius:11px;display:flex;align-items:center;gap:10px;"><span>🤖</span><div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;"><strong style="color:rgba(255,255,255,.8);">AI Fraud Check: Auto-Approved</strong> · Trust Score 92 · Dharavi confirmed · Motion: outdoor · Cell tower: match</div><span class="pill pg" style="margin-left:auto;">CLEAR</span></div>
+      </div>
+      <div class="gc"><div class="gc-t" style="margin-bottom:12px;">Payout History</div><table class="dt"><thead><tr><th>Claim ID</th><th>Trigger</th><th>Date</th><th>Status</th><th>Amount</th></tr></thead><tbody>
+        <tr><td style="font-family:var(--fm);font-size:10px;">CLM-2026-00341</td><td>Heavy Rain Red Alert</td><td>20 Mar</td><td><span class="pill po">Processing</span></td><td style="font-family:var(--fh);font-size:15px;color:var(--green);">₹1,200</td></tr>
+        <tr><td style="font-family:var(--fm);font-size:10px;">CLM-2026-00298</td><td>Severe AQI (428)</td><td>15 Mar</td><td><span class="pill pg">Paid</span></td><td style="font-family:var(--fh);font-size:15px;color:var(--green);">₹840</td></tr>
+        <tr><td style="font-family:var(--fm);font-size:10px;">CLM-2026-00245</td><td>Platform Outage</td><td>12 Mar</td><td><span class="pill pg">Paid</span></td><td style="font-family:var(--fh);font-size:15px;color:var(--green);">₹720</td></tr>
+        <tr><td style="font-family:var(--fm);font-size:10px;">CLM-2026-00189</td><td>Extreme Heat (47°C)</td><td>5 Mar</td><td><span class="pill pg">Paid</span></td><td style="font-family:var(--fh);font-size:15px;color:var(--green);">₹960</td></tr>
+      </tbody></table></div>
+    </div>
+
+    <!-- POLICY, TIERS, FRAUD, ANALYTICS, ONBOARD, FAQ pages -->
+    <div class="page" id="pg-policy">
+      <div class="ib" style="height:170px;"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80&auto=format" alt="Policy"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Policy · GS-2026-MUM-008421</div><div class="ib-h">My Active Policy</div></div></div>
+      <div class="cov-h"><div class="ch"><div class="ch-row"><div><div class="ch-lbl">Current Policy</div><div class="ch-tier" id="pol-tier">Standard Shield — Week 3</div></div><div class="ch-live"><div class="ch-ld"></div>ACTIVE · RENEWS 27 MAR</div></div><div class="ch-amt" id="pol-pay">₹1,200</div><div class="ch-al">Max payout per trigger event</div><div class="ch-meta" style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);"><div><div class="ch-mv" id="pol-prem">₹59</div><div class="ch-ml">Weekly premium</div></div><div><div class="ch-mv">Orange+</div><div class="ch-ml">Alert threshold</div></div><div><div class="ch-mv" id="pol-zone">Dharavi</div><div class="ch-ml">Coverage zone</div></div></div></div></div>
+      <div class="g2"><div class="gc"><div class="gc-bar" style="background:linear-gradient(90deg,var(--green),transparent);"></div><div class="gc-t">Triggers Covered</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:4px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:9px;border:1px solid rgba(255,255,255,.06);"><span>🌧️</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Heavy Rain / Flood</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Red alert ≥ 3 hours</div></div><span class="pill pg">ACTIVE</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:9px;border:1px solid rgba(255,255,255,.06);"><span>🌡️</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Extreme Heat</div><div style="font-size:10px;color:rgba(255,255,255,.3);">&gt;45°C for ≥ 2 hours</div></div><span class="pill pg">ACTIVE</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:9px;border:1px solid rgba(255,255,255,.06);"><span>💨</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Severe AQI</div><div style="font-size:10px;color:rgba(255,255,255,.3);">AQI &gt; 400 ≥ 2 hours</div></div><span class="pill pg">ACTIVE</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:9px;border:1px solid rgba(255,255,255,.06);"><span>📱</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Platform Outage</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Zomato &gt; 45 min</div></div><span class="pill pg">ACTIVE</span></div>
+      </div></div>
+      <div><div class="gc" style="margin-bottom:12px;"><div class="gc-t">Premium Breakdown</div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;"><span style="color:rgba(255,255,255,.45);">Base Rate</span><span>₹50.00</span></div><div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;"><span style="color:rgba(255,255,255,.45);">Zone Risk (1.18×)</span><span style="color:var(--amber);">+₹9.00</span></div><div style="display:flex;justify-content:space-between;padding:9px 0 0;font-size:13px;font-weight:700;"><span>Weekly Total</span><span style="color:var(--green);">₹59.00</span></div></div>
+      <div class="gc"><div class="gc-t">Exclusions</div><div style="display:flex;flex-direction:column;gap:7px;margin-top:3px;"><div style="font-size:12px;color:rgba(255,255,255,.4);display:flex;gap:8px;"><span style="color:var(--red);">✕</span>Vehicle repair</div><div style="font-size:12px;color:rgba(255,255,255,.4);display:flex;gap:8px;"><span style="color:var(--red);">✕</span>Health / accident bills</div><div style="font-size:12px;color:rgba(255,255,255,.4);display:flex;gap:8px;"><span style="color:var(--red);">✕</span>Personal choice not to work</div></div></div></div></div>
+    </div>
+
+    <div class="page" id="pg-tiers">
+      <div class="ib" style="height:160px;"><img src="https://images.unsplash.com/photo-1542281286-9e0a16bb7366?w=1600&q=80&auto=format" alt="Plans"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Coverage Plans</div><div class="ib-h">Weekly pricing. <em>Cancel anytime.</em></div></div></div>
+      <div class="tiers">
+        <div class="tier"><div class="tier-tag" style="background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);">Basic</div><div class="tier-p">₹29</div><div class="tier-per">per week</div><div class="tier-pay">₹500</div><div class="tier-pl">max weekly payout</div><div class="tier-f">🌧️ Rain (Red ≥3hr)</div><div class="tier-f">🌡️ Heat (&gt;45°C ≥2hr)</div><div class="tier-f" style="opacity:.3;">💨 AQI Coverage</div><div class="tier-f" style="opacity:.3;">📱 Platform Outage</div><div class="tier-f" style="opacity:.3;">🚫 Curfew</div><button class="tier-btn" style="background:var(--green);color:#fff;" onclick="selectTier('Basic','₹29','₹500')">Select Basic</button></div>
+        <div class="tier feat"><div class="tier-tag" style="background:rgba(var(--aRgb),.2);color:var(--amber);">⭐ Popular</div><div class="tier-p" style="color:#fff;">₹59</div><div class="tier-per" style="color:rgba(255,255,255,.4);">per week</div><div class="tier-pay" style="color:var(--amber);">₹1,200</div><div class="tier-pl" style="color:rgba(255,255,255,.4);">max weekly payout</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">🌧️ Rain (Orange+ ≥2hr)</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">🌡️ Heat (&gt;43°C ≥1.5hr)</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">💨 AQI &gt;400 ≥2hr</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">📱 Outage &gt;45min</div><div class="tier-f" style="color:#fff;opacity:.4;border-color:rgba(255,255,255,.1);">🚫 Curfew</div><button class="tier-btn" style="background:var(--amber);color:#fff;" onclick="selectTier('Standard','₹59','₹1,200')">Select Standard</button></div>
+        <div class="tier prem"><div class="tier-tag" style="background:rgba(168,85,247,.2);color:#c084fc;">💎 Pro</div><div class="tier-p" style="color:#fff;">₹99</div><div class="tier-per" style="color:rgba(255,255,255,.4);">per week</div><div class="tier-pay" style="color:var(--amber);">₹2,500</div><div class="tier-pl" style="color:rgba(255,255,255,.4);">max weekly payout</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">🌧️ Rain (Yellow+ ≥1.5hr)</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">🌡️ Heat (&gt;40°C ≥1hr)</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">💨 AQI &gt;300</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">📱 Outage &gt;30min</div><div class="tier-f" style="color:#fff;border-color:rgba(255,255,255,.1);">🚫 Curfew / 144</div><button class="tier-btn" style="background:#9c7bea;color:#fff;" onclick="selectTier('Pro','₹99','₹2,500')">Select Pro</button></div>
+      </div>
+    </div>
+
+    <div class="page" id="pg-fraud">
+      <div class="ib" style="height:170px;"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1600&q=80&auto=format" alt="Fraud"><div class="ib-ov" style="background:linear-gradient(135deg,rgba(6,10,8,.92),rgba(var(--rRgb),.15));"></div><div class="ib-c"><div class="ib-tag">Anti-Spoofing · Multi-Signal AI</div><div class="ib-h">Fraud Monitor</div></div></div>
+      <div class="ab ab-o"><div class="ab-ico">⚠️</div><div><div class="ab-t" style="color:var(--amber);">Coordinated Ring — Dharavi (Pin 400017)</div><div class="ab-b2">47 claims in 8 minutes from overlapping device clusters. Batch held. Genuine workers receive SMS within 2 hours.</div></div></div>
+      <div class="g2" style="margin-bottom:13px;">
+        <div class="gc"><div class="gc-bar" style="background:linear-gradient(90deg,var(--green),transparent);"></div><div class="gc-t" style="margin-bottom:12px;">CLM-00341 — Your Check</div><div class="fr"><svg viewBox="0 0 96 96" width="96" height="96"><circle cx="48" cy="48" r="36" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/><circle cx="48" cy="48" r="36" fill="none" stroke="var(--green)" stroke-width="10" stroke-dasharray="207 226" stroke-linecap="round"/></svg><div class="fr-c"><div class="fr-n" style="color:var(--green);">92</div><div class="fr-l">TRUST</div></div></div><div style="text-align:center;margin-bottom:11px;"><span class="pill pg">🏅 Auto-Approved</span></div><div class="sigs"><div class="sig"><div class="sig-i">📍</div><div class="sig-n">GPS in Alert Zone</div><div class="sig-s sok">MATCH</div></div><div class="sig"><div class="sig-i">📡</div><div class="sig-n">Cell Tower</div><div class="sig-s sok">MATCH</div></div><div class="sig"><div class="sig-i">🏃</div><div class="sig-n">Motion Sensor</div><div class="sig-s sok">OUTDOOR</div></div><div class="sig"><div class="sig-i">🛵</div><div class="sig-n">Platform Activity</div><div class="sig-s sok">3 ORDERS</div></div><div class="sig"><div class="sig-i">📱</div><div class="sig-n">Device Fingerprint</div><div class="sig-s sok">UNIQUE</div></div><div class="sig"><div class="sig-i">⏱️</div><div class="sig-n">Velocity Check</div><div class="sig-s sok">PASS</div></div></div></div>
+        <div class="gc"><div class="gc-bar" style="background:linear-gradient(90deg,var(--red),transparent);"></div><div class="gc-t" style="margin-bottom:12px;">CLM-00352 — Suspicious</div><div class="fr"><svg viewBox="0 0 96 96" width="96" height="96"><circle cx="48" cy="48" r="36" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10"/><circle cx="48" cy="48" r="36" fill="none" stroke="var(--red)" stroke-width="10" stroke-dasharray="63 226" stroke-linecap="round"/></svg><div class="fr-c"><div class="fr-n" style="color:var(--red);">28</div><div class="fr-l">TRUST</div></div></div><div style="text-align:center;margin-bottom:11px;"><span class="pill pr">🔴 Hard Hold</span></div><div class="sigs"><div class="sig"><div class="sig-i">📍</div><div class="sig-n">GPS in Alert Zone</div><div class="sig-s sw2">SPOOFED?</div></div><div class="sig"><div class="sig-i">📡</div><div class="sig-n">Cell Tower</div><div class="sig-s sb3">MISMATCH</div></div><div class="sig"><div class="sig-i">🏃</div><div class="sig-n">Motion Sensor</div><div class="sig-s sb3">STATIONARY</div></div><div class="sig"><div class="sig-i">🛵</div><div class="sig-n">Platform Activity</div><div class="sig-s sb3">NONE</div></div><div class="sig"><div class="sig-i">📱</div><div class="sig-n">Device Fingerprint</div><div class="sig-s sb3">SHARED ×3</div></div><div class="sig"><div class="sig-i">⏱️</div><div class="sig-n">Velocity Check</div><div class="sig-s sb3">FAIL</div></div></div></div>
+      </div>
+      <div class="gc"><div class="gc-t" style="margin-bottom:11px;">Ring Detection — Batch Analysis</div><table class="dt"><thead><tr><th>Pin</th><th>Claims (10min)</th><th>Baseline</th><th>Anomaly</th><th>Action</th></tr></thead><tbody><tr><td style="font-family:var(--fm);font-size:10px;">400017</td><td style="color:var(--red);font-weight:700;">47</td><td style="color:rgba(255,255,255,.3);">~12</td><td><div style="background:rgba(255,255,255,.07);border-radius:3px;height:5px;overflow:hidden;width:90px;display:inline-block;"><div style="height:100%;width:88%;background:var(--red);border-radius:3px;"></div></div></td><td><span class="pill pr">HELD</span></td></tr><tr><td style="font-family:var(--fm);font-size:10px;">400070</td><td style="color:var(--amber);font-weight:700;">18</td><td style="color:rgba(255,255,255,.3);">~9</td><td><div style="background:rgba(255,255,255,.07);border-radius:3px;height:5px;overflow:hidden;width:90px;display:inline-block;"><div style="height:100%;width:52%;background:var(--amber);border-radius:3px;"></div></div></td><td><span class="pill po">MONITOR</span></td></tr><tr><td style="font-family:var(--fm);font-size:10px;">400051</td><td style="color:var(--green);font-weight:700;">11</td><td style="color:rgba(255,255,255,.3);">~10</td><td><div style="background:rgba(255,255,255,.07);border-radius:3px;height:5px;overflow:hidden;width:90px;display:inline-block;"><div style="height:100%;width:16%;background:var(--green);border-radius:3px;"></div></div></td><td><span class="pill pg">NORMAL</span></td></tr></tbody></table></div>
+    </div>
+
+    <div class="page" id="pg-analytics">
+      <div class="ib" style="height:190px;"><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&q=80&auto=format" alt="Analytics"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Admin · Insurer View</div><div class="ib-h">Analytics Dashboard</div></div><div class="ib-stats"><div class="ibs"><div class="ibs-l">Loss Ratio</div><div class="ibs-v">44%</div></div><div class="ibs"><div class="ibs-l">Fraud Saved</div><div class="ibs-v">₹27.6K</div></div></div></div>
+      <div class="sg"><div class="sc b"><div class="sc-i">👥</div><div class="sc-v">8,241</div><div class="sc-l">Active Policies</div><div class="sc-d du">↑ 12%</div></div><div class="sc g"><div class="sc-i">💰</div><div class="sc-v">₹4.86L</div><div class="sc-l">Premiums Collected</div><div class="sc-d du">↑ Weekly</div></div><div class="sc o"><div class="sc-i">⚡</div><div class="sc-v">₹2.14L</div><div class="sc-l">Payouts This Week</div><div class="sc-d" style="color:rgba(255,255,255,.3);">Loss 44%</div></div><div class="sc r"><div class="sc-i">🔍</div><div class="sc-v">23</div><div class="sc-l">Fraud Blocks</div><div class="sc-d du">Saved ₹27.6K</div></div></div>
+      <div class="g2">
+        <div class="gc"><div class="gc-bar" style="background:linear-gradient(90deg,var(--green),var(--amber),transparent);"></div><div class="gc-t">Premiums vs Payouts (₹L)</div><div style="margin-top:13px;"><div class="bars"><div class="bar" data-v="₹3.2L" style="height:65%;background:linear-gradient(to top,var(--green),rgba(var(--gRgb),.3));"></div><div class="bar" data-v="₹4.1L" style="height:82%;background:linear-gradient(to top,var(--green),rgba(var(--gRgb),.3));"></div><div class="bar" data-v="₹3.8L" style="height:76%;background:linear-gradient(to top,var(--green),rgba(var(--gRgb),.3));"></div><div class="bar" data-v="₹4.5L" style="height:90%;background:linear-gradient(to top,var(--green),rgba(var(--gRgb),.3));"></div><div class="bar" data-v="₹4.86L" style="height:97%;background:linear-gradient(to top,var(--amber),rgba(var(--aRgb),.3));"></div><div class="bar" data-v="₹2.1L" style="height:42%;background:linear-gradient(to top,var(--red),rgba(var(--rRgb),.3));"></div><div class="bar" data-v="₹2.14L" style="height:43%;background:linear-gradient(to top,var(--red),rgba(var(--rRgb),.3));"></div></div><div class="bar-lbls"><div class="bar-lbl">W1</div><div class="bar-lbl">W2</div><div class="bar-lbl">W3</div><div class="bar-lbl">W4</div><div class="bar-lbl" style="color:var(--amber);">W5</div><div class="bar-lbl" style="color:var(--red);">Pay</div><div class="bar-lbl" style="color:var(--red);">Trend</div></div></div></div>
+        <div class="gc"><div class="gc-t">Trigger Breakdown</div><div style="margin-top:13px;"><div class="dnt"><svg viewBox="0 0 110 110" width="110" height="110"><circle cx="55" cy="55" r="42" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="12"/><circle cx="55" cy="55" r="42" fill="none" stroke="var(--green)" stroke-width="12" stroke-dasharray="105 264" stroke-linecap="round"/><circle cx="55" cy="55" r="42" fill="none" stroke="var(--amber)" stroke-width="12" stroke-dasharray="53 264" stroke-dashoffset="-105" stroke-linecap="round"/><circle cx="55" cy="55" r="42" fill="none" stroke="var(--red)" stroke-width="12" stroke-dasharray="40 264" stroke-dashoffset="-158" stroke-linecap="round"/></svg><div class="dnt-c"><div class="dnt-v">847</div><div class="dnt-l">CLAIMS</div></div></div><div style="margin-top:11px;display:flex;flex-direction:column;gap:6px;"><div style="display:flex;align-items:center;gap:7px;font-size:11px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--green);"></div><span style="flex:1;color:rgba(255,255,255,.55);">Heavy Rain</span><strong>40%</strong></div><div style="display:flex;align-items:center;gap:7px;font-size:11px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--amber);"></div><span style="flex:1;color:rgba(255,255,255,.55);">Extreme AQI</span><strong>20%</strong></div><div style="display:flex;align-items:center;gap:7px;font-size:11px;"><div style="width:7px;height:7px;border-radius:50%;background:var(--red);"></div><span style="flex:1;color:rgba(255,255,255,.55);">Other</span><strong>40%</strong></div></div></div></div>
+      </div>
+      <div class="gc" style="margin-top:13px;"><div class="gc-bar" style="background:linear-gradient(90deg,var(--amber),var(--green),transparent);"></div><div class="gc-t" style="margin-bottom:13px;">7-Day Payout Forecast</div><div class="forecast"><div class="fd" style="border-color:rgba(var(--gRgb),.2);background:rgba(var(--gRgb),.04);"><div class="fd-i">☀️</div><div class="fd-n">FRI</div><div class="fd-r" style="color:var(--green);">Low</div><div class="fd-a">₹12K</div></div><div class="fd" style="border-color:rgba(var(--aRgb),.2);background:rgba(var(--aRgb),.04);"><div class="fd-i">⛅</div><div class="fd-n">SAT</div><div class="fd-r" style="color:var(--amber);">Med</div><div class="fd-a">₹45K</div></div><div class="fd" style="border-color:rgba(var(--rRgb),.25);background:rgba(var(--rRgb),.06);"><div class="fd-i">⛈️</div><div class="fd-n">SUN</div><div class="fd-r" style="color:var(--red);">HIGH</div><div class="fd-a">₹1.8L</div></div><div class="fd" style="border-color:rgba(var(--rRgb),.25);background:rgba(var(--rRgb),.06);"><div class="fd-i">🌧️</div><div class="fd-n">MON</div><div class="fd-r" style="color:var(--red);">HIGH</div><div class="fd-a">₹2.1L</div></div><div class="fd" style="border-color:rgba(var(--aRgb),.2);background:rgba(var(--aRgb),.04);"><div class="fd-i">🌦️</div><div class="fd-n">TUE</div><div class="fd-r" style="color:var(--amber);">Med</div><div class="fd-a">₹78K</div></div><div class="fd" style="border-color:rgba(var(--gRgb),.2);background:rgba(var(--gRgb),.04);"><div class="fd-i">⛅</div><div class="fd-n">WED</div><div class="fd-r" style="color:var(--green);">Low</div><div class="fd-a">₹22K</div></div><div class="fd" style="border-color:rgba(var(--gRgb),.2);background:rgba(var(--gRgb),.04);"><div class="fd-i">☀️</div><div class="fd-n">THU</div><div class="fd-r" style="color:var(--green);">Low</div><div class="fd-a">₹8K</div></div></div><div style="margin-top:9px;font-size:11px;color:rgba(255,255,255,.25);">⚠️ AI predicts elevated claims Sun–Mon. Recommend +₹3L liquidity reserve.</div></div>
+    </div>
+
+    <div class="page" id="pg-onboard">
+      <div class="ib" style="height:180px;"><img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1600&q=80&auto=format" alt="Worker"><div class="ib-ov" style="background:linear-gradient(to top,rgba(6,10,8,.92) 0%,rgba(6,10,8,.3) 60%,transparent);"></div><div class="ib-c"><div class="ib-tag">Enrollment · 90 Seconds</div><div class="ib-h">Income protection for<br><em>India's delivery heroes</em></div></div></div>
+      <div class="ob-steps"><div class="ob-s"><div class="ob-n">1</div><div class="ob-t">Verify Identity</div><div class="ob-d">Phone + Partner ID. 30 seconds.</div></div><div class="ob-s"><div class="ob-n">2</div><div class="ob-t">AI Risk Profile</div><div class="ob-d">Zone, earnings & weather history analysis.</div></div><div class="ob-s"><div class="ob-n">3</div><div class="ob-t">Pay & Activate</div><div class="ob-d">₹29–₹99/week via UPI. Policy live instantly.</div></div></div>
+      <div class="g2">
+        <div class="gc"><div class="gc-bar" style="background:linear-gradient(90deg,var(--green),transparent);"></div><div class="gc-t">Worker Details</div><div style="margin-top:9px;"><div class="fr2"><div class="fg"><label class="fl">Full Name</label><input class="fi" id="ob-name" placeholder="Your name"></div><div class="fg"><label class="fl">Phone</label><input class="fi" id="ob-phone" placeholder="+91 98765 43210"></div></div><div class="fg"><label class="fl">Platform</label><select class="fs" id="ob-platform"><option>Zomato</option><option>Swiggy</option><option>Blinkit</option><option>Zepto</option><option>Amazon Flex</option></select></div><div class="fg"><label class="fl">Partner ID</label><input class="fi" id="ob-pid" placeholder="ZOM-DEL-2024-XXXXX"></div><div class="fg"><label class="fl">Zone</label><select class="fs" id="ob-zone"><option>Dharavi, Mumbai</option><option>Kurla, Mumbai</option><option>Andheri East</option><option>Bandra, Mumbai</option></select></div><div class="fg"><label class="fl">UPI ID</label><input class="fi" id="ob-upi" placeholder="yourname@upi"></div><button class="btn-sub" onclick="saveOnboard()">Save Profile & Continue →</button></div></div>
+        <div><div class="gc" style="margin-bottom:12px;"><div class="gc-t">AI Risk Score</div><div style="margin-top:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:13px;margin-bottom:11px;"><div style="font-size:10px;color:rgba(255,255,255,.28);margin-bottom:8px;font-family:var(--fm);letter-spacing:1px;">ZONE RISK MULTIPLIER</div><div style="display:flex;align-items:center;gap:11px;"><div style="flex:1;background:rgba(255,255,255,.07);border-radius:4px;height:7px;overflow:hidden;"><div style="height:100%;width:72%;background:linear-gradient(90deg,var(--amber),var(--green));border-radius:4px;"></div></div><div style="font-family:var(--fh);font-size:18px;color:var(--amber);">1.18×</div></div><div style="font-size:10px;color:rgba(255,255,255,.28);margin-top:5px;">Dharavi: moderate monsoon risk</div></div></div>
+        <div class="cov-h"><div class="ch"><div class="ch-lbl">Recommended</div><div class="ch-amt" style="font-size:42px;">₹59</div><div class="ch-al">per week · Standard Shield · ₹1,200 max</div><button class="btn-sub" style="margin-top:14px;" onclick="goPage('tiers')">Choose Plan →</button></div></div></div>
+      </div>
+    </div>
+
+    <div class="page" id="pg-faq">
+      <div class="ib" style="height:160px;"><img src="https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=1600&q=80&auto=format" alt="Help"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">FAQ & Help</div><div class="ib-h">We've got you covered</div></div></div>
+      <div class="g2">
+        <div class="gc"><div class="gc-bar" style="background:linear-gradient(90deg,var(--blue),transparent);"></div><div class="gc-t" style="margin-bottom:0;">Common Questions</div>
+          <div class="acc-item open" onclick="toggleAcc(this)"><div class="acc-head"><div class="acc-head-t">How do I receive my payout?</div><div class="acc-arr">▼</div></div><div class="acc-body">Payouts are sent automatically to your registered UPI ID within 90 seconds of a verified trigger. No action required from you.</div></div>
+          <div class="acc-item" onclick="toggleAcc(this)"><div class="acc-head"><div class="acc-head-t">What counts as an extreme rain trigger?</div><div class="acc-arr">▼</div></div><div class="acc-body">A Red Alert issued by IMD for your zone, lasting at least 3 continuous hours. Standard Shield also covers Orange Alerts for ≥2 hours.</div></div>
+          <div class="acc-item" onclick="toggleAcc(this)"><div class="acc-head"><div class="acc-head-t">Can I pause my coverage?</div><div class="acc-arr">▼</div></div><div class="acc-body">Yes, you can pause weekly auto-renewal from Settings. Your coverage remains active until the current week ends.</div></div>
+          <div class="acc-item" onclick="toggleAcc(this)"><div class="acc-head"><div class="acc-head-t">What if my GPS was acting up during a trigger?</div><div class="acc-arr">▼</div></div><div class="acc-body">Our system uses 6 signals — not just GPS. If you're flagged (🟡 Soft Hold), you'll receive an SMS asking for a 1-tap confirmation. Workers with Trust Badges are auto-approved.</div></div>
+          <div class="acc-item" onclick="toggleAcc(this)"><div class="acc-head"><div class="acc-head-t">Is vehicle repair covered?</div><div class="acc-arr">▼</div></div><div class="acc-body">No. GigShield covers income loss only — not vehicle repair, health, life, or accident bills. See our policy exclusions for the full list.</div></div>
+          <div class="acc-item" onclick="toggleAcc(this)"><div class="acc-head"><div class="acc-head-t">How is my premium calculated?</div><div class="acc-arr">▼</div></div><div class="acc-body">Base Rate × Zone Risk Multiplier (0.8–1.6) × Earnings Exposure Factor × (1 − Safety Discount up to 20%). AI recalculates weekly based on current data.</div></div>
+        </div>
+        <div>
+          <div class="gc" style="margin-bottom:12px;">
+            <div class="gc-t">Contact Support</div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:4px;">
+              <button style="display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:11px;border:1.5px solid rgba(var(--gRgb),.25);background:rgba(var(--gRgb),.07);color:rgba(255,255,255,.8);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:all .2s;" onclick="showToast('Chat support opening...','info')"><span style="font-size:20px;">💬</span><div><div>Live Chat</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;">Available 24/7</div></div><span style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.3);">→</span></button>
+              <button style="display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:11px;border:1.5px solid rgba(var(--pRgb),.25);background:rgba(var(--pRgb),.07);color:rgba(255,255,255,.8);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:all .2s;" onclick="toggleAI()"><span style="font-size:20px;">🤖</span><div><div>Ask AI Assistant</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;">Instant answers</div></div><span style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.3);">→</span></button>
+              <button style="display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:11px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);font-family:var(--ff);font-size:13px;font-weight:600;cursor:pointer;text-align:left;transition:all .2s;" onclick="showToast('Email: support@gigshield.in','info')"><span style="font-size:20px;">📧</span><div><div>Email Support</div><div style="font-size:11px;color:rgba(255,255,255,.35);margin-top:1px;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a696f6a6a75686e5a7d737d6972737f767e347374">[email&#160;protected]</a></div></div><span style="margin-left:auto;font-size:11px;color:rgba(255,255,255,.3);">→</span></button>
+            </div>
+          </div>
+          <div class="gc">
+            <div class="gc-t">Quick Links</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:4px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;cursor:pointer;color:rgba(255,255,255,.7);" onclick="goPage('tiers')">Coverage Plans <span style="color:rgba(255,255,255,.25);">→</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;cursor:pointer;color:rgba(255,255,255,.7);" onclick="goPage('referral')">Refer & Earn ₹100 <span style="color:rgba(255,255,255,.25);">→</span></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;font-size:13px;cursor:pointer;color:rgba(255,255,255,.7);" onclick="showToast('Privacy Policy: gigshield.in/privacy','info')">Privacy Policy <span style="color:rgba(255,255,255,.25);">→</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- EARNINGS SIMULATOR -->
+    <div class="page" id="pg-simulator">
+      <div class="ib" style="height:180px;"><img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=80&auto=format" alt="Calculator"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.4) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">AI-Powered · Earnings Simulator</div><div class="ib-h">How much would you<br><em>have earned back?</em></div></div></div>
+      <div class="ab ab-g" style="margin-bottom:16px;"><div class="ab-ico">💡</div><div><div class="ab-t" style="color:var(--green);">Simulate Your Income Protection</div><div class="ab-b2">Enter your weekly earnings and zone to see exactly how much GigShield would have paid you back during past disruptions.</div></div></div>
+      <div class="g2">
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--amber),transparent);"></div>
+          <div class="gc-t">Your Details</div>
+          <div style="margin-top:12px;">
+            <div class="fg"><label class="fl">Average Weekly Earnings (₹)</label><input class="fi" id="sim-earn" type="number" placeholder="e.g. 4500" value="4500" oninput="runSim()"></div>
+            <div class="fg"><label class="fl">Your Zone</label>
+              <select class="fs" id="sim-zone" onchange="runSim()">
+                <option value="1.18">Dharavi, Mumbai (1.18× risk)</option>
+                <option value="1.22">Kurla, Mumbai (1.22× risk)</option>
+                <option value="0.95">Andheri East (0.95× risk)</option>
+                <option value="0.88">Bandra (0.88× risk)</option>
+                <option value="1.35">Govandi (1.35× risk)</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Coverage Plan</label>
+              <select class="fs" id="sim-plan" onchange="runSim()">
+                <option value="29,500">Basic Shield — ₹29/week, ₹500 max</option>
+                <option value="59,1200" selected>Standard Shield — ₹59/week, ₹1,200 max</option>
+                <option value="99,2500">Pro Shield — ₹99/week, ₹2,500 max</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Months to Simulate</label>
+              <select class="fs" id="sim-months" onchange="runSim()">
+                <option value="1">1 Month</option>
+                <option value="3" selected>3 Months</option>
+                <option value="6">6 Months</option>
+                <option value="12">12 Months</option>
+              </select>
+            </div>
+            <button class="btn-sub" onclick="runSim();showToast('Simulation updated!','success')">Run Simulation</button>
+          </div>
+        </div>
+        <div>
+          <div class="gc" style="margin-bottom:13px;">
+            <div class="gc-bar" style="background:linear-gradient(90deg,var(--green),transparent);"></div>
+            <div class="gc-t">Results</div>
+            <div id="sim-result" style="margin-top:12px;">
+              <div style="text-align:center;padding:18px 0 14px;"><div style="font-family:var(--fh);font-size:48px;font-weight:400;color:var(--green);letter-spacing:-2px;" id="sim-total-payout">₹3,600</div><div style="font-size:13px;color:rgba(255,255,255,.4);margin-top:4px;">Total payouts you would receive</div></div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+                <div style="background:rgba(var(--gRgb),.07);border:1px solid rgba(var(--gRgb),.18);border-radius:12px;padding:13px;text-align:center;"><div style="font-family:var(--fh);font-size:22px;color:var(--green);" id="sim-triggers">9</div><div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Triggers in period</div></div>
+                <div style="background:rgba(var(--rRgb),.07);border:1px solid rgba(var(--rRgb),.18);border-radius:12px;padding:13px;text-align:center;"><div style="font-family:var(--fh);font-size:22px;color:var(--red);" id="sim-premiums">₹708</div><div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Total premiums paid</div></div>
+                <div style="background:rgba(var(--aRgb),.07);border:1px solid rgba(var(--aRgb),.18);border-radius:12px;padding:13px;text-align:center;"><div style="font-family:var(--fh);font-size:22px;color:var(--amber);" id="sim-roi">508%</div><div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Return on investment</div></div>
+                <div style="background:rgba(var(--bRgb),.07);border:1px solid rgba(var(--bRgb),.18);border-radius:12px;padding:13px;text-align:center;"><div style="font-family:var(--fh);font-size:22px;color:var(--blue);" id="sim-netgain">₹2,892</div><div style="font-size:10px;color:rgba(255,255,255,.35);margin-top:2px;">Net gain</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="gc">
+            <div class="gc-t">Recent Disruptions in Zone</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:10px;">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(var(--rRgb),.06);border-radius:10px;border:1px solid rgba(var(--rRgb),.15);"><span style="font-size:15px;">🌧️</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Heavy Rain · 15 Mar</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Red Alert · 5h 20min</div></div><div style="font-family:var(--fh);font-size:14px;color:var(--green);">+₹1,200</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(var(--aRgb),.06);border-radius:10px;border:1px solid rgba(var(--aRgb),.15);"><span style="font-size:15px;">💨</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">AQI 428 · 10 Mar</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Severe · 2h 40min</div></div><div style="font-family:var(--fh);font-size:14px;color:var(--green);">+₹840</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:rgba(var(--rRgb),.06);border-radius:10px;border:1px solid rgba(var(--rRgb),.15);"><span style="font-size:15px;">🌡️</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Heat Wave · 5 Mar</div><div style="font-size:10px;color:rgba(255,255,255,.3);">47°C · 3h 10min</div></div><div style="font-family:var(--fh);font-size:14px;color:var(--green);">+₹960</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CLAIM APPEAL -->
+    <div class="page" id="pg-appeal">
+      <div class="ib" style="height:170px;"><img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1600&q=80&auto=format" alt="Legal"><div class="ib-ov" style="background:linear-gradient(135deg,rgba(6,10,8,.92),rgba(var(--bRgb),.12) 100%);"></div><div class="ib-c"><div class="ib-tag">Claim Appeal · Human Review</div><div class="ib-h">Dispute a decision.<br><em>We are listening.</em></div></div></div>
+      <div class="ab ab-o" style="margin-bottom:16px;"><div class="ab-ico">⚖️</div><div><div class="ab-t" style="color:var(--amber);">Was your claim held or rejected unfairly?</div><div class="ab-b2">If you received a Soft Hold or Hard Hold but were genuinely stranded, submit an appeal. A human reviewer responds within 4 hours.</div></div></div>
+      <div class="g2">
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--blue),transparent);"></div>
+          <div class="gc-t">Submit Appeal</div>
+          <div style="margin-top:12px;">
+            <div class="fg"><label class="fl">Claim ID</label><input class="fi" id="ap-claim" placeholder="e.g. CLM-2026-00341"></div>
+            <div class="fg"><label class="fl">Reason for Appeal</label>
+              <select class="fs" id="ap-reason">
+                <option>GPS inaccurate due to bad weather signal</option>
+                <option>Cell network outage in my zone</option>
+                <option>Platform app crashed during active orders</option>
+                <option>Motion sensor glitched — was working</option>
+                <option>Other reason</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">What were you doing at trigger time?</label><textarea class="fi" id="ap-desc" style="resize:none;height:80px;" placeholder="Describe where you were, what orders you had, etc."></textarea></div>
+            <div class="fg"><label class="fl">Evidence (Optional)</label>
+              <div style="border:1.5px dashed rgba(255,255,255,.12);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:border-color .2s;" onmouseover="this.style.borderColor='rgba(var(--gRgb),.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.12)'" onclick="showToast('File upload available in mobile app','info')"><div style="font-size:22px;margin-bottom:5px;">📸</div><div style="font-size:12px;color:rgba(255,255,255,.35);">Upload screenshot of your last order receipt<br><span style="font-size:10px;color:rgba(255,255,255,.2);">JPG/PNG up to 5MB</span></div></div>
+            </div>
+            <button class="btn-sub" onclick="submitAppeal()">Submit Appeal for Review</button>
+          </div>
+        </div>
+        <div>
+          <div class="gc" style="margin-bottom:13px;">
+            <div class="gc-bar" style="background:linear-gradient(90deg,var(--amber),transparent);"></div>
+            <div class="gc-t">3-Tier Decision System</div>
+            <div style="display:flex;flex-direction:column;gap:9px;margin-top:12px;">
+              <div style="padding:12px 14px;background:rgba(var(--gRgb),.07);border:1px solid rgba(var(--gRgb),.2);border-radius:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span>🟢</span><div style="font-size:13px;font-weight:700;color:var(--green);">Auto-Approved</div></div><div style="font-size:12px;color:rgba(255,255,255,.45);">All 6 signals clear. Payout in 90 seconds.</div></div>
+              <div style="padding:12px 14px;background:rgba(var(--aRgb),.07);border:1px solid rgba(var(--aRgb),.2);border-radius:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span>🟡</span><div style="font-size:13px;font-weight:700;color:var(--amber);">Soft Hold</div></div><div style="font-size:12px;color:rgba(255,255,255,.45);">1-2 anomalies. SMS confirmation. Payout in 2 hours.</div></div>
+              <div style="padding:12px 14px;background:rgba(var(--rRgb),.07);border:1px solid rgba(var(--rRgb),.2);border-radius:12px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;"><span>🔴</span><div style="font-size:13px;font-weight:700;color:var(--red);">Hard Hold</div></div><div style="font-size:12px;color:rgba(255,255,255,.45);">Multiple fraud signals. Submit evidence. Human review 24 hours.</div></div>
+            </div>
+          </div>
+          <div class="gc"><div class="gc-t">Your Appeal History</div><div style="margin-top:10px;font-size:13px;color:rgba(255,255,255,.25);text-align:center;padding:16px 0;">No previous appeals. Clean record ✓</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMUNITY -->
+    <div class="page" id="pg-community">
+      <div class="ib" style="height:190px;"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&q=80&auto=format" alt="Community"><div class="ib-ov" style="background:linear-gradient(to right,rgba(6,10,8,.9),rgba(6,10,8,.35) 70%,transparent);"></div><div class="ib-c"><div class="ib-tag">Community · Mumbai Delivery Partners</div><div class="ib-h">47,000 riders.<br><em>One shield.</em></div></div><div class="ib-stats"><div class="ibs"><div class="ibs-l">Members</div><div class="ibs-v">47K+</div></div><div class="ibs"><div class="ibs-l">Avg. Saving</div><div class="ibs-v">₹4.2K/mo</div></div></div></div>
+      <div class="g65" style="margin-bottom:14px;">
+        <div class="gc">
+          <div class="gc-bar" style="background:linear-gradient(90deg,var(--purple),transparent);"></div>
+          <div class="gc-t" style="margin-bottom:14px;">Community Feed</div>
+          <div style="display:flex;flex-direction:column;gap:11px;" id="community-feed">
+            <div style="padding:13px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.07);">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🏍️</div><div><div style="font-size:13px;font-weight:600;">Arjun M.</div><div style="font-size:11px;color:rgba(255,255,255,.3);">Dharavi · Standard · 2h ago</div></div><span class="pill pb" style="margin-left:auto;">PAID</span></div>
+              <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.55;">Got my ₹1,200 payout in under 90 seconds during today's rain! Didn't even have to open the app. This platform is the real deal.</div>
+              <div style="display:flex;gap:12px;margin-top:9px;"><button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0;" onclick="likePost(this)">👍 <span>24</span></button><button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;padding:0;" onclick="showToast('Reply feature coming soon!','info')">💬 Reply</button><button style="background:none;border:none;color:rgba(255,255,255,.3);font-size:12px;cursor:pointer;margin-left:auto;padding:0;" onclick="askAI('Arjun got his payout in 90 seconds during rain. How does this work?');toggleAI()">🤖 Ask AI</button></div>
+            </div>
+            <div style="padding:13px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.07);">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🚴</div><div><div style="font-size:13px;font-weight:600;">Priya S.</div><div style="font-size:11px;color:rgba(255,255,255,.3);">Andheri · Pro Shield · 5h ago</div></div><span class="pill pg" style="margin-left:auto;">TRUST BADGE</span></div>
+              <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.55;">Upgraded to Pro Shield last week. The curfew coverage finally convinced me — Section 144 in my zone and got ₹2,500 back. Worth every extra rupee.</div>
+              <div style="display:flex;gap:12px;margin-top:9px;"><button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0;" onclick="likePost(this)">👍 <span>61</span></button><button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;padding:0;" onclick="showToast('Reply feature coming soon!','info')">💬 Reply</button></div>
+            </div>
+            <div style="padding:13px;background:rgba(255,255,255,.03);border-radius:12px;border:1px solid rgba(255,255,255,.07);">
+              <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px;"><div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">🛵</div><div><div style="font-size:13px;font-weight:600;">Deepak K.</div><div style="font-size:11px;color:rgba(255,255,255,.3);">Kurla · Basic Shield · 1d ago</div></div></div>
+              <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.55;">Question: Does the AQI trigger work during Diwali pollution? The smog was terrible last month and I couldn't ride at all.</div>
+              <div style="display:flex;gap:12px;margin-top:9px;"><button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0;" onclick="likePost(this)">👍 <span>12</span></button><button style="background:none;border:none;color:rgba(255,255,255,.35);font-size:12px;cursor:pointer;padding:0;" onclick="toggleAI();askAI('Does the AQI trigger cover Diwali pollution days in Mumbai?')">🤖 Ask AI</button></div>
+            </div>
+          </div>
+          <div style="margin-top:13px;display:flex;gap:9px;">
+            <input class="fi" id="comm-post" placeholder="Share your experience or ask the community..." style="flex:1;">
+            <button style="padding:10px 18px;border-radius:10px;border:none;background:var(--green);color:#fff;font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;flex-shrink:0;transition:all .2s;" onclick="postCommunity()">Post</button>
+          </div>
+        </div>
+        <div>
+          <div class="gc" style="margin-bottom:13px;">
+            <div class="gc-bar" style="background:linear-gradient(90deg,var(--amber),transparent);"></div>
+            <div class="gc-t">Top Earners Saved · This Month</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:11px;">
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(var(--aRgb),.07);border-radius:10px;border:1px solid rgba(var(--aRgb),.18);"><span style="font-size:17px;">🥇</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Sunita R.</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Dharavi · Pro Shield</div></div><div style="font-family:var(--fh);font-size:15px;color:var(--amber);">₹28,500</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.07);"><span style="font-size:17px;">🥈</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Ankit P.</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Kurla · Pro</div></div><div style="font-family:var(--fh);font-size:15px;color:rgba(255,255,255,.75);">₹24,200</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:10px;border:1px solid rgba(255,255,255,.07);"><span style="font-size:17px;">🥉</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;">Meena T.</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Andheri · Standard</div></div><div style="font-family:var(--fh);font-size:15px;color:rgba(200,150,80,.8);">₹19,800</div></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(var(--gRgb),.06);border-radius:10px;border:1px solid rgba(var(--gRgb),.18);"><span style="font-size:17px;">⭐</span><div style="flex:1;"><div style="font-size:12px;font-weight:600;" id="lb-you">You</div><div style="font-size:10px;color:rgba(255,255,255,.3);">Dharavi · Standard</div></div><div style="font-family:var(--fh);font-size:15px;color:var(--green);">₹4,800</div></div>
+            </div>
+          </div>
+          <div class="gc">
+            <div class="gc-t">Zone Stats · Dharavi</div>
+            <div style="display:flex;flex-direction:column;gap:7px;margin-top:10px;">
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);"><span style="color:rgba(255,255,255,.45);">Active partners in zone</span><strong>1,247</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);"><span style="color:rgba(255,255,255,.45);">Avg. monthly payout</span><strong style="color:var(--green);">₹2,840</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);"><span style="color:rgba(255,255,255,.45);">Triggers this month</span><strong>14</strong></div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;"><span style="color:rgba(255,255,255,.45);">Zone risk level</span><span class="pill pr">HIGH RISK</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /app -->
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+/* ── STORAGE ── */
+const S={
+  get:(k)=>{try{const v=localStorage.getItem('gs_'+k);return v?JSON.parse(v):null;}catch(e){return null;}},
+  set:(k,v)=>{try{localStorage.setItem('gs_'+k,JSON.stringify(v));}catch(e){}},
+  del:(k)=>{try{localStorage.removeItem('gs_'+k);}catch(e){}}
+};
+
+/* ── USER STATE ── */
+let user=S.get('user')||null;
+let settings=S.get('settings')||{renew:true,alerts:true,notif:true,bio:false,'2fa':true,sum:false,fraud:true};
+let aiKey=S.get('aikey')||'';
+let aiHistory=[];
+let currentPlan=S.get('plan')||{name:'Standard',price:'₹59',payout:'₹1,200'};
+
+/* ── CURSOR ── */
+const cd=document.getElementById('cd'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';});
+(function l(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cr.style.left=rx+'px';cr.style.top=ry+'px';requestAnimationFrame(l);})();
+document.querySelectorAll('button,.gbi,.ni,.tier,.gc,.sc,.ob-s,.wt,.ref-code,.acc-head').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cx'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cx'));});
+
+/* ── PARTICLES ── */
+(function(){
+  const C=document.getElementById('pcv'),ctx=C.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=C.width=window.innerWidth;H=C.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  class P{constructor(){this.reset();}reset(){this.x=Math.random()*W;this.y=Math.random()*H;this.vx=(Math.random()-.5)*.2;this.vy=(Math.random()-.5)*.2;this.life=Math.random();this.ml=.005+Math.random()*.003;this.sz=Math.random()*1.3+.3;this.op=Math.random()*.35+.1;}update(){this.x+=this.vx;this.y+=this.vy;this.life+=this.ml;if(this.x<0||this.x>W||this.y<0||this.y>H||this.life>1)this.reset();}draw(){const a=Math.sin(this.life*Math.PI)*this.op;ctx.beginPath();ctx.arc(this.x,this.y,this.sz,0,Math.PI*2);ctx.fillStyle=`rgba(34,197,94,${a})`;ctx.fill();}}
+  for(let i=0;i<70;i++)pts.push(new P());
+  function frame(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.update();p.draw();});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<110){const a=(1-d/110)*.05;ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);ctx.strokeStyle=`rgba(34,197,94,${a})`;ctx.lineWidth=.5;ctx.stroke();}}requestAnimationFrame(frame);}
+  frame();
+})();
+
+/* ── TOAST ── */
+function showToast(msg,type='success',dur=3500){
+  const w=document.getElementById('toast-wrap');
+  const el=document.createElement('div');
+  el.className='toast t-'+type;
+  const icons={success:'✅',error:'❌',info:'ℹ️',warn:'⚠️'};
+  el.innerHTML=`<span>${icons[type]||'📢'}</span><span>${msg}</span>`;
+  w.appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),400);},dur);
+}
+
+/* ── LOGIN / SIGNUP ── */
+function openLogin(tab='login'){document.getElementById('login-panel').classList.add('open');switchTab(tab);}
+function closeLogin(){document.getElementById('login-panel').classList.remove('open');}
+function switchTab(t){document.querySelectorAll('.lp-tab').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.lp-tc').forEach(e=>e.classList.remove('active'));document.getElementById('tab-'+t).classList.add('active');document.getElementById('tc-'+t).classList.add('active');}
+function selWT(el){document.querySelectorAll('.wt').forEach(w=>w.classList.remove('sel'));el.classList.add('sel');}
+function doLogin(){
+  const ph=document.getElementById('login-phone').value.trim();
+  const pw=document.getElementById('login-pass').value.trim();
+  const saved=S.get('user');
+  if(saved&&(ph===''||ph===saved.phone)){launchApp(saved);}
+  else if(ph&&pw){launchApp({name:'Rajan Kumar',phone:ph||'+91 98765 43210',platform:'Zomato',zone:'Dharavi, Mumbai',upi:'rajan.kumar@upi',pid:'ZOM-DEL-2024-08421'});}
+  else{showToast('Enter your phone number to continue','warn');}
+}
+function doSignup(){
+  const name=document.getElementById('su-name').value.trim();
+  const phone=document.getElementById('su-phone').value.trim();
+  const pid=document.getElementById('su-pid').value.trim();
+  const zone=document.getElementById('su-zone').value;
+  const upi=document.getElementById('su-upi').value.trim();
+  const pass=document.getElementById('su-pass').value.trim();
+  if(!name||!phone){showToast('Please fill in your name and phone','warn');return;}
+  const selectedWT=document.querySelector('.wt.sel');
+  const platform=selectedWT?selectedWT.dataset.platform:'Zomato';
+  const u={name,phone,platform,zone:zone+', Mumbai',upi:upi||phone.replace('+91 ','').replace(' ','')+'@upi',pid:pid||'ZOM-DEL-2024-XXXXX'};
+  S.set('user',u);
+  showToast('Account created! Welcome to GigShield 🛡️','success');
+  launchApp(u);
+}
+function loadDemo(type){
+  if(type==='worker'){launchApp({name:'Rajan Kumar',phone:'+91 98765 43210',platform:'Zomato',zone:'Dharavi, Mumbai',upi:'rajan.kumar@upi',pid:'ZOM-DEL-2024-08421'});}
+  else{launchApp({name:'Admin User',phone:'+91 99999 00000',platform:'Admin',zone:'All Zones',upi:'admin@upi',pid:'ADMIN-001'});goPage('analytics');}
+}
+
+/* ── LAUNCH / EXIT APP ── */
+function launchApp(u){
+  user=u||user||{name:'Rajan Kumar',platform:'Zomato',zone:'Dharavi, Mumbai',upi:'rajan.kumar@upi',pid:'ZOM-DEL-2024-08421'};
+  if(u)S.set('user',u);
+  closeLogin();
+  const landing=document.getElementById('landing');
+  landing.classList.add('exit');
+  setTimeout(()=>{
+    landing.style.display='none';
+    document.getElementById('app').classList.add('open');
+    document.getElementById('ai-fab').classList.add('show');
+    updateUIFromUser();
+    setTimeout(()=>{const b=document.getElementById('cpb');if(b)b.style.width='75%';},800);
+    showToast('Welcome back, '+user.name.split(' ')[0]+'! 👋','success');
+  },700);
+}
+function exitApp(){
+  document.getElementById('app').classList.remove('open');
+  document.getElementById('ai-fab').classList.remove('show');
+  const l=document.getElementById('landing');l.style.display='flex';l.classList.remove('exit');
+  closeSettings();
+}
+function doLogout(){S.del('user');exitApp();showToast('Logged out successfully','info');}
+
+function updateUIFromUser(){
+  if(!user)return;
+  const first=user.name.split(' ')[0];
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('sb-wname',user.name);setEl('sb-wplat',user.platform+' · Active');
+  setEl('dash-name',first);setEl('pf-name2',user.name);setEl('pf-id2',user.pid||'');
+  setEl('pf-platform',user.platform);setEl('pf-zone',user.zone);
+  setEl('pf-phone',user.phone);setEl('pf-upi',user.upi);
+  setEl('claim-upi',user.upi);
+  setEl('set-pf-name',user.name);setEl('set-pf-id',(user.pid||'')+' · '+user.zone);
+  // Update plan UI
+  const p=currentPlan;
+  setEl('sb-plan',p.name.toUpperCase());setEl('dash-tier',p.name+' Shield');
+  setEl('dash-payout',p.payout);setEl('dash-prem',p.price);
+  setEl('stat-premium',p.price);setEl('pol-tier',p.name+' Shield — Week 3');
+  setEl('pol-pay',p.payout);setEl('pol-prem',p.price);
+  setEl('pol-zone',user.zone.split(',')[0]);
+  // Ref code
+  const rc=document.getElementById('ref-code-text');if(rc)rc.textContent='GS-'+user.name.replace(/\s/g,'').slice(0,2).toUpperCase()+Math.floor(1000+Math.random()*9000);
+  // Load AI key
+  // Mask AI key inputs only if not already masked
+  if(aiKey){
+    const ak=document.getElementById('ai-key');
+    const sk=document.getElementById('set-ai-key');
+    if(ak&&ak.value!=='••••••••••••••••••••')ak.value='••••••••••••••••••••';
+    if(sk&&sk.value!=='••••••••••••••••••••')sk.value='••••••••••••••••••••';
+  }
+}
+
+/* ── NAV ── */
+function goPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  const pg=document.getElementById('pg-'+page);
+  if(pg)pg.classList.add('active');
+  const map={dashboard:0,policy:1,claims:2,notifications:3,onboard:4,tiers:5,referral:6,fraud:7,analytics:8,weather:9,profile:10,faq:11,simulator:12,appeal:13,community:14};
+  const items=document.querySelectorAll('.ni');
+  if(map[page]!==undefined&&items[map[page]])items[map[page]].classList.add('active');
+  document.querySelector('.main-c').scrollTo({top:0,behavior:'smooth'});
+  if(page==='notifications'){document.getElementById('notif-badge').style.display='none';document.getElementById('claims-badge').style.display='none';}
+}
+
+/* ── SETTINGS ── */
+function openSettings(){document.getElementById('settings-panel').classList.add('open');}
+function closeSettings(){document.getElementById('settings-panel').classList.remove('open');}
+function toggleSet(key){
+  settings[key]=!settings[key];S.set('settings',settings);
+  const el=document.getElementById('tog-'+key);
+  if(el){el.classList.toggle('on',settings[key]);}
+  showToast(key.charAt(0).toUpperCase()+key.slice(1)+' '+(settings[key]?'enabled':'disabled'),'info');
+}
+function saveAIKeyFromSettings(){
+  var raw=S.get('aikey')||'';
+  var si=document.getElementById('set-ai-key');
+  var typed=si?si.value.trim():'';
+  if(typed&&typed.indexOf('•')===-1&&typed.length>10){raw=typed;}
+  if(!raw||raw.length<10){showToast('Paste your Gemini API key first','warn');if(si)si.focus();return;}
+  aiKey=raw;
+  try{localStorage.setItem('gs_aikey',JSON.stringify(raw));}catch(e){}
+  if(si)si.value='••••••••••••••••••••';
+  var ai=document.getElementById('ai-key');
+  if(ai)ai.value='••••••••••••••••••••';
+  showToast('Key saved! Finding best model…','success');
+  detectModel(raw).then(function(m){
+    if(m){try{localStorage.setItem('nxc_gemini_model',m);}catch(e){}
+    showToast('AI ready! Model: '+m+' 🤖','success');}
+  });
+}
+// Load settings toggles
+Object.keys(settings).forEach(k=>{const el=document.getElementById('tog-'+k);if(el)el.classList.toggle('on',settings[k]);});
+
+/* ── TIERS ── */
+function selectTier(name,price,payout){
+  currentPlan={name,price,payout};S.set('plan',currentPlan);
+  updateUIFromUser();
+  showToast(name+' Shield selected! Policy updating…','success');
+  setTimeout(()=>goPage('policy'),800);
+}
+
+/* ── ONBOARD SAVE ── */
+function saveOnboard(){
+  const n=document.getElementById('ob-name').value.trim();
+  const ph=document.getElementById('ob-phone').value.trim();
+  const pl=document.getElementById('ob-platform').value;
+  const pid=document.getElementById('ob-pid').value.trim();
+  const z=document.getElementById('ob-zone').value;
+  const upi=document.getElementById('ob-upi').value.trim();
+  if(!n||!ph){showToast('Please fill in name and phone','warn');return;}
+  const u={name:n,phone:ph,platform:pl,pid:pid||'PARTNER-'+Math.floor(10000+Math.random()*90000),zone:z,upi:upi||ph.replace(/\D/g,'').slice(-10)+'@upi'};
+  user=u;S.set('user',u);updateUIFromUser();
+  showToast('Profile saved! Choose your coverage plan.','success');
+  setTimeout(()=>goPage('tiers'),600);
+}
+
+/* ── ACCORDION ── */
+function toggleAcc(el){el.classList.toggle('open');}
+
+/* ── NOTIFICATIONS ── */
+function markAllRead(){document.querySelectorAll('.notif-item.unread').forEach(el=>el.classList.remove('unread'));showToast('All notifications marked as read','success');}
+function filterNotifs(type){showToast('Showing: '+type+' notifications','info');}
+
+/* ── REFERRAL ── */
+function copyRef(){
+  const code=document.getElementById('ref-code-text').textContent;
+  navigator.clipboard.writeText(code).catch(()=>{});
+  showToast('Code "'+code+'" copied to clipboard!','success');
+}
+
+/* ── AI ASSISTANT ── */
+function toggleAI(){
+  const p=document.getElementById('ai-panel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')&&document.getElementById('ai-msgs').children.length===0){
+    addBotMsg('Hi! I\'m your GigShield AI assistant 👋\n\nI can help with your policy, payouts, coverage questions, and more. How can I help you today?');
+  }
+}
+function saveAIKey(){
+  // Read the stored raw key first (blur handler may have already masked input)
+  var raw=S.get('aikey')||'';
+  var inp=document.getElementById('ai-key');
+  var typed=inp?inp.value.trim():'';
+  // Use typed value only if it doesn't look like bullets
+  if(typed&&typed.indexOf('•')===-1&&typed.length>10){raw=typed;}
+  if(!raw||raw.length<10){
+    showToast('Paste your Gemini API key then click Save','warn');
+    if(inp)inp.focus();
+    return;
+  }
+  aiKey=raw;
+  try{localStorage.setItem('gs_aikey',JSON.stringify(raw));}catch(e){}
+  if(inp){inp.value='••••••••••••••••••••';}
+  var si=document.getElementById('set-ai-key');
+  if(si){si.value='••••••••••••••••••••';}
+  showToast('Key saved! Finding best model…','success');
+  detectModel(raw).then(function(m){
+    if(m){try{localStorage.setItem('nxc_gemini_model',m);}catch(e){}
+    showToast('AI ready! Model: '+m+' 🤖','success');}
+  });
+}
+async function detectModel(key){
+  const candidates=['gemini-2.0-flash','gemini-2.0-flash-lite','gemini-1.5-flash','gemini-1.5-pro'];
+  for(var i=0;i<candidates.length;i++){
+    var m=candidates[i];
+    try{
+      var r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+m+':generateContent?key='+encodeURIComponent(key),{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({contents:[{parts:[{text:'Say OK'}]}],generationConfig:{maxOutputTokens:5}})
+      });
+      if(r.ok){return m;}  // only 200 OK counts — not 400/403/404
+    }catch(e){}
+  }
+  return 'gemini-2.0-flash';
+}
+function addUserMsg(text){
+  const msgs=document.getElementById('ai-msgs');
+  const div=document.createElement('div');div.className='ai-msg user';
+  const now=new Date();const t=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  div.innerHTML=`<div class="ai-bubble">${text}</div><div class="ai-msg-time">${t}</div>`;
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+  document.getElementById('ai-quick').style.display='none';
+}
+function addBotMsg(text){
+  const msgs=document.getElementById('ai-msgs');
+  const typing=document.createElement('div');typing.className='ai-msg bot';
+  typing.innerHTML='<div class="ai-typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(typing);msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{
+    typing.remove();
+    const div=document.createElement('div');div.className='ai-msg bot';
+    const now=new Date();const t=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+    div.innerHTML=`<div class="ai-bubble">${text.replace(/\n/g,'<br>')}</div><div class="ai-msg-time">${t}</div>`;
+    msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+  },900+Math.random()*600);
+}
+async function sendAI(){
+  const inp=document.getElementById('ai-in');
+  const q=inp.value.trim();if(!q)return;
+  inp.value='';addUserMsg(q);
+  const key=aiKey||S.get('aikey')||'';
+  if(!key){addBotMsg('Please save your Gemini API key first — paste it in the field below and click Save Key.');return;}
+  try{
+    const systemPrompt=`You are GigShield AI, a helpful assistant for an AI-powered parametric income insurance platform for gig delivery workers in India (Zomato, Swiggy, Blinkit, Amazon). 
+The platform protects workers from income loss due to extreme weather (rain, heat, AQI), platform outages, and curfews.
+Plans: Basic ₹29/week (₹500 payout), Standard ₹59/week (₹1,200 payout), Pro ₹99/week (₹2,500 payout).
+Payouts are automatic via UPI within 90 seconds. AI fraud detection uses GPS, cell tower, motion sensor, and platform activity signals.
+${user?'Current user: '+user.name+', '+user.platform+' partner, '+user.zone+', '+currentPlan.name+' Shield plan.':''}
+Be concise, friendly, and helpful. Answer in 2-4 sentences max unless more detail is needed.`;
+    var model='gemini-2.0-flash';try{model=localStorage.getItem('nxc_gemini_model')||'gemini-2.0-flash';}catch(e){}
+    const url=`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(key)}`;
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents:[{parts:[{text:systemPrompt+'\n\nUser: '+q}]}],generationConfig:{temperature:.7,maxOutputTokens:300}})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d?.error?.message||'API error');
+    const raw=d?.candidates?.[0]?.content?.parts?.[0]?.text||'Sorry, I couldn\'t get a response. Please try again.';
+    addBotMsg(raw.trim());
+  }catch(e){addBotMsg('Sorry, I ran into an error: '+e.message+'. Please check your API key in Settings.');}
+}
+
+/* -- EARNINGS SIMULATOR -- */
+function runSim(){
+  const earn=parseFloat(document.getElementById('sim-earn')?.value||4500);
+  const risk=parseFloat(document.getElementById('sim-zone')?.value||1.18);
+  const planVal=(document.getElementById('sim-plan')?.value||'59,1200').split(',');
+  const prem=parseFloat(planVal[0]);
+  const maxPay=parseFloat(planVal[1]);
+  const months=parseFloat(document.getElementById('sim-months')?.value||3);
+  const weeks=months*4.3;
+  // Simulate triggers: ~3 per month at high risk zone
+  const triggersPerMonth=risk>1.2?3.5:risk>1?2.5:1.8;
+  const totalTriggers=Math.round(triggersPerMonth*months);
+  const totalPayouts=Math.min(totalTriggers*maxPay,earn*weeks*0.6);
+  const totalPrem=prem*weeks;
+  const netGain=totalPayouts-totalPrem;
+  const roi=Math.round((netGain/totalPrem)*100);
+  const fmt=v=>v>=100000?'₹'+Math.round(v/1000)+'K':v>=1000?'₹'+Math.round(v/100)/10+'K':'₹'+Math.round(v);
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('sim-total-payout',fmt(totalPayouts));
+  setEl('sim-triggers',totalTriggers);
+  setEl('sim-premiums',fmt(totalPrem));
+  setEl('sim-roi',roi+'%');
+  setEl('sim-netgain',netGain>0?'+'+fmt(netGain):fmt(netGain));
+  const roiEl=document.getElementById('sim-roi');
+  if(roiEl)roiEl.style.color=roi>0?'var(--amber)':'var(--red)';
+}
+
+/* -- CLAIM APPEAL -- */
+function submitAppeal(){
+  const id=document.getElementById('ap-claim')?.value?.trim();
+  const reason=document.getElementById('ap-reason')?.value;
+  const desc=document.getElementById('ap-desc')?.value?.trim();
+  if(!id){showToast('Please enter a Claim ID','warn');return;}
+  if(!desc||desc.length<20){showToast('Please describe what happened (at least 20 characters)','warn');return;}
+  S.set('appeal_'+id,{id,reason,desc,ts:new Date().toISOString(),status:'pending'});
+  showToast('Appeal submitted! Reference: APL-'+Math.floor(10000+Math.random()*90000)+'. You will hear back within 4 hours.','success');
+  document.getElementById('ap-claim').value='';
+  document.getElementById('ap-desc').value='';
+}
+
+/* -- COMMUNITY -- */
+function likePost(btn){
+  const span=btn.querySelector('span');
+  const liked=btn.dataset.liked==='1';
+  if(!liked){span.textContent=parseInt(span.textContent)+1;btn.dataset.liked='1';btn.style.color='var(--green)';}
+  else{span.textContent=parseInt(span.textContent)-1;btn.dataset.liked='0';btn.style.color='rgba(255,255,255,.4)';}
+}
+function postCommunity(){
+  var inp=document.getElementById('comm-post');
+  var text=inp?inp.value.trim():'';
+  if(!text||text.length<5){showToast('Write something before posting','warn');return;}
+  var feed=document.getElementById('community-feed');
+  if(!feed)return;
+  var name=(user&&user.name)||'You';
+  var initials=name.split(' ').map(function(w){return w[0];}).join('').toUpperCase();
+  var div=document.createElement('div');
+  div.style.cssText='padding:13px;background:rgba(34,197,94,.04);border-radius:12px;border:1px solid rgba(34,197,94,.18);';
+  div.innerHTML='<div style="display:flex;align-items:center;gap:9px;margin-bottom:8px;">'+
+    '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">'+initials+'</div>'+
+    '<div><div style="font-size:13px;font-weight:600;">'+name+'</div>'+
+    '<div style="font-size:11px;color:rgba(255,255,255,.3);">Just now</div></div>'+
+    '<span class="pill pg" style="margin-left:auto;">NEW</span></div>'+
+    '<div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.55;">'+text+'</div>'+
+    '<div style="display:flex;gap:12px;margin-top:9px;">'+
+    '<button style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:0;" onclick="likePost(this)">&#128077; <span>0</span></button></div>';
+  feed.insertBefore(div,feed.firstChild);
+  inp.value='';
+  showToast('Posted to community!','success');
+  if(user){var posts=S.get('comm_posts')||[];posts.unshift({text:text,ts:new Date().toISOString()});S.set('comm_posts',posts.slice(0,20));}
+}
+/* -- INIT SIMULATOR -- */
+setTimeout(()=>runSim(),200);
+function askAI(q){document.getElementById('ai-in').value=q;sendAI();}
+
+/* ── AUTO-LOGIN ── */
+window.addEventListener('DOMContentLoaded',()=>{
+  const savedUser=S.get('user');
+  if(savedUser){
+    user=savedUser;
+    const savedPlan=S.get('plan');if(savedPlan)currentPlan=savedPlan;
+    const savedKey=S.get('aikey');if(savedKey)aiKey=savedKey;
+    launchApp(savedUser);
+  }
+  // Load settings & init
+  const savedKey2=S.get('aikey');if(savedKey2)aiKey=savedKey2;
+  Object.keys(settings).forEach(k=>{const el=document.getElementById('tog-'+k);if(el)el.classList.toggle('on',settings[k]);});
+// Focus: reveal saved key so user can edit it
+  ['ai-key','set-ai-key'].forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el)return;
+    el.addEventListener('focus',function(){
+      var saved=S.get('aikey')||'';
+      if(saved&&this.value.indexOf('•')!==-1)this.value=saved;
+    });
+    // NO blur auto-save — only Save button saves
+  });
+  setTimeout(()=>{ try{runSim();}catch(e){} }, 300);
+  // Auto-tick claim flow animation
+  setTimeout(()=>{ try{ const b=document.getElementById('cpb'); if(b) b.style.width='75%'; }catch(e){} }, 900);
+  // Keyboard shortcut: press ? for AI
+  document.addEventListener('keydown', e=>{
+    if(e.key==='?' && document.getElementById('app').classList.contains('open')) toggleAI();
+  });
+  // Enter key on AI input
+  const aiInp=document.getElementById('ai-in');
+  if(aiInp) aiInp.addEventListener('keydown', e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAI();} });
+  // Community leaderboard name
+  if(user){ const el=document.getElementById('lb-you'); if(el) el.textContent='You ('+user.name.split(' ')[0]+' K.)'; }
+});
+</script>
+</body>
+</html>
