@@ -3479,13 +3479,53 @@
                 transform: translateY(0);
             }
 
-            /* ── LANDING ── */
-            .l-h { padding: 80px 20px !important; }
-            .l-tt { font-size: 32px !important; }
-            .l-st { font-size: 15px !important; }
-            .gc { width: 100% !important; }
-            .dash-tier { font-size: 28px !important; }
-            .sc-v { font-size: 20px !important; }
+            /* ── LANDING (MOBILE FIX) ── */
+            #landing { padding: 40px 20px !important; justify-content: flex-start !important; }
+            .land-nav { padding: 20px !important; }
+            .land-logo { font-size: 18px !important; }
+            .land-hero { 
+                margin-top: 60px !important; 
+                margin-bottom: 40px !important; 
+                text-align: left !important; 
+                padding: 0 !important; 
+            }
+            .land-ey { font-size: 8px !important; padding: 4px 12px !important; margin-bottom: 15px !important; }
+            .land-t { 
+                font-size: 42px !important; 
+                line-height: 1.05 !important; 
+                letter-spacing: -1px !important; 
+                margin-bottom: 15px !important; 
+            }
+            .land-s { 
+                font-size: 15px !important; 
+                line-height: 1.5 !important; 
+                margin: 0 0 24px !important; 
+                max-width: 100% !important; 
+                text-align: left !important;
+            }
+            .land-ctas { 
+                flex-direction: column !important; 
+                gap: 10px !important; 
+                align-items: stretch !important; 
+            }
+            .cta { width: 100% !important; padding: 16px !important; font-size: 14px !important; border-radius: 12px !important; }
+            
+            /* Hide Clutter on Mobile */
+            .land-feats, .land-ticker, .land-scr { display: none !important; }
+            
+            /* Simplify Bottom Bar for Mobile */
+            .gbar { position: relative !important; margin-top: 40px !important; padding: 0 !important; transform: none !important; animation: none !important; }
+            .gbar-in { 
+                grid-template-columns: 1fr !important; 
+                background: rgba(255,255,255,0.03) !important; 
+                border-radius: 15px !important; 
+                padding: 10px !important; 
+                gap: 5px !important;
+            }
+            .gbi { padding: 12px !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+            .gbi:last-child { border: none !important; }
+            .gbi-icon { font-size: 20px !important; }
+            .gbcta { margin-top: 10px !important; }
         }
 
         /* Hide mob-header on desktop */
