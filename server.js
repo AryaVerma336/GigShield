@@ -13,11 +13,16 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
-            ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-            "img-src": ["'self'", "data:", "https:", "http:"],
+            "default-src": ["'self'"],
             "script-src": ["'self'", "'unsafe-inline'", "https:", "http:"],
             "script-src-attr": ["'unsafe-inline'"],
-            "connect-src": ["'self'", "https:", "http:"]
+            "style-src": ["'self'", "'unsafe-inline'", "https:", "http:"],
+            "img-src": ["'self'", "data:", "https:", "http:"],
+            "connect-src": ["'self'", "https:", "http:"],
+            "font-src": ["'self'", "https:", "http:", "data:"],
+            "object-src": ["'none'"],
+            "media-src": ["'self'"],
+            "frame-src": ["'self'"]
         },
     },
 }));
