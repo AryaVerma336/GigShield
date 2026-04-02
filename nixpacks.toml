@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["gcc", "gnumake", "python3"]
+nixPkgs = ["sqlite", "gcc", "g++", "gnumake", "python3"]
 
 [phases.build]
-cmds = ["npm install", "npm rebuild sqlite3"]
+cmds = ["npm install", "npm rebuild sqlite3 --build-from-source"]
 
 [variables]
 LD_LIBRARY_PATH = ""
