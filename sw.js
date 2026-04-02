@@ -1,5 +1,9 @@
-const CACHE_NAME = 'gigshield-v3'; // Bumped to clear old caches
+const CACHE_NAME = 'gigshield-v4'; // Final Bump to clear all caches
 const ASSETS = [
+  '/',
+  '/index.html',
+  '/app.js',
+  '/app.js?v=2.0.1',
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
