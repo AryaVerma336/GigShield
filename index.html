@@ -8,7 +8,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
         rel="stylesheet">
-    
+
     <!-- PWA META -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#22c55e">
@@ -160,7 +160,8 @@
         }
 
         /* DYNAMIC LOCALIZATION UTILS */
-        .city-name, .user-zone {
+        .city-name,
+        .user-zone {
             display: inline;
         }
 
@@ -169,6 +170,7 @@
             position: relative;
             width: 100%;
         }
+
         .ac-list {
             position: absolute;
             top: 100%;
@@ -184,11 +186,13 @@
             overflow-y: auto;
             z-index: 2000;
             display: none;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
         }
+
         .ac-list.show {
             display: block;
         }
+
         .ac-item {
             padding: 10px 14px;
             font-size: 13px;
@@ -197,12 +201,18 @@
             transition: all 0.2s;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .ac-item:last-child { border-bottom: none; }
-        .ac-item:hover, .ac-item.active {
+
+        .ac-item:last-child {
+            border-bottom: none;
+        }
+
+        .ac-item:hover,
+        .ac-item.active {
             background: rgba(var(--gRgb), 0.15);
             color: var(--green);
             padding-left: 18px;
         }
+
         .ac-item .sub {
             font-size: 10px;
             opacity: 0.5;
@@ -264,8 +274,8 @@
             z-index: 20;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            align-items: stretch;
+            justify-content: space-between;
             overflow: hidden;
             transition: opacity .8s var(--ease), transform .8s var(--ease);
         }
@@ -301,15 +311,13 @@
 
         /* LAND NAV */
         .land-nav {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            position: relative;
+            z-index: 5;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 26px 40px;
-            z-index: 5;
+            padding: 22px 40px;
+            flex-shrink: 0;
         }
 
         .land-logo {
@@ -374,13 +382,24 @@
         }
 
         /* LAND HERO */
+        /* LAND CENTER (scrollable middle area) */
+        .land-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 0 24px 16px;
+            position: relative;
+            z-index: 4;
+            min-height: 0;
+        }
+
         .land-hero {
             position: relative;
             z-index: 4;
             text-align: center;
-            padding: 0 24px;
-            margin-top: 20px; /* Reduced to sit naturally below feats */
-            margin-bottom: 40px;
+            width: 100%;
         }
 
         .land-ey {
@@ -503,13 +522,13 @@
 
         /* FEATURES ROW */
         .land-feats {
-            position: relative;
-            margin-top: 110px; /* Offset for absolute nav */
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
             z-index: 4;
+            padding: 8px 24px;
+            flex-shrink: 0;
             opacity: 0;
             animation: fadeD .9s var(--ease) 1.3s forwards;
         }
@@ -529,19 +548,9 @@
             border-radius: 40px;
         }
 
-        /* SCROLL HINT */
+        /* SCROLL HINT — hidden, replaced by ticker */
         .land-scr {
-            position: absolute;
-            bottom: 170px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            animation: riseUp .8s var(--ease) 2s forwards;
-            z-index: 4;
+            display: none;
         }
 
         .scrb {
@@ -583,11 +592,9 @@
 
         /* GLASS BOTTOM BAR */
         .gbar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            position: relative;
             z-index: 6;
+            flex-shrink: 0;
             opacity: 0;
             animation: slideUp .9s var(--ease) 1.4s forwards;
         }
@@ -677,14 +684,11 @@
 
         /* STATS TICKER on landing */
         .land-ticker {
-            position: absolute;
-            bottom: 90px;
-            left: 0;
-            right: 0;
-            z-index: 5;
             display: flex;
             justify-content: center;
-            gap: 40px;
+            gap: 32px;
+            padding: 12px 24px;
+            flex-shrink: 0;
             opacity: 0;
             animation: fadeD 1s var(--ease) 1.8s forwards;
         }
@@ -695,14 +699,14 @@
 
         .lt-val {
             font-family: var(--fh);
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 400;
             color: #fff;
             letter-spacing: -1px;
         }
 
         .lt-lbl {
-            font-size: 11px;
+            font-size: 10px;
             color: rgba(255, 255, 255, .4);
             margin-top: 2px;
             font-family: var(--fm);
@@ -2817,14 +2821,16 @@
             z-index: 2;
             width: 480px;
             max-width: 95%;
-            max-height: 90vh; /* Added to fit screen */
+            max-height: 90vh;
+            /* Added to fit screen */
             background: rgba(8, 14, 10, .98);
             border: 1.5px solid rgba(255, 255, 255, .1);
             border-radius: 28px;
             box-shadow: 0 32px 80px rgba(0, 0, 0, .8);
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Header/Body split */
+            overflow: hidden;
+            /* Header/Body split */
             transform: translateY(30px) scale(.98);
             transition: all .6s var(--spring);
         }
@@ -3026,12 +3032,21 @@
         }
 
         @keyframes pgIn {
-            from { opacity: 0; transform: scale(.95); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* ══ AI ASSISTANT PANEL ══ */
@@ -3613,8 +3628,12 @@
         }
 
         @media(max-width:900px) {
+
             /* ── APP LAYOUT ── */
-            #app { flex-direction: column !important; padding-top: 56px !important; }
+            #app {
+                flex-direction: column !important;
+                padding-top: 56px !important;
+            }
 
             /* ── SIDEBAR: hidden by default, slides in as drawer ── */
             .sb {
@@ -3625,31 +3644,37 @@
                 height: 100vh !important;
                 z-index: 1000 !important;
                 transform: translateX(-100%) !important;
-                transition: transform 0.3s cubic-bezier(0.4,0,0.2,1) !important;
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
                 overflow-y: auto !important;
                 flex-direction: column !important;
                 display: flex !important;
-                border-right: 1px solid rgba(255,255,255,0.08) !important;
+                border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
                 /* Remove glassmorphism blur — solid bg so drawer content stays sharp */
                 backdrop-filter: none !important;
                 -webkit-backdrop-filter: none !important;
                 background: #0a0f0b !important;
             }
+
             .sb.mob-open {
                 transform: translateX(0) !important;
-                box-shadow: 8px 0 40px rgba(0,0,0,0.6) !important;
+                box-shadow: 8px 0 40px rgba(0, 0, 0, 0.6) !important;
             }
+
             /* Restore hidden elements inside drawer */
             .sb.mob-open .sb-top,
             .sb.mob-open .sb-worker,
             .sb.mob-open .sb-btm,
-            .sb.mob-open .nsec { display: block !important; }
+            .sb.mob-open .nsec {
+                display: block !important;
+            }
+
             .sb.mob-open .nav-w {
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 2px !important;
                 overflow-x: visible !important;
             }
+
             .sb.mob-open .ni {
                 padding: 10px 16px !important;
                 border-radius: 10px !important;
@@ -3662,10 +3687,13 @@
                 display: none;
                 position: fixed;
                 inset: 0;
-                background: rgba(0,0,0,0.6);
+                background: rgba(0, 0, 0, 0.6);
                 z-index: 999;
             }
-            #mob-backdrop.show { display: block; }
+
+            #mob-backdrop.show {
+                display: block;
+            }
 
             /* ── MOBILE TOP HEADER BAR (Only visible inside app) ── */
             #mob-header {
@@ -3675,48 +3703,112 @@
                 height: 56px;
                 padding: 0 16px;
                 background: #060a08;
-                border-bottom: 1px solid rgba(255,255,255,0.06);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 z-index: 200;
             }
-            #app.open ~ #mob-header { display: flex !important; }
+
+            #app.open~#mob-header {
+                display: flex !important;
+            }
+
             #mob-hamburger {
-                width: 40px; height: 40px;
+                width: 40px;
+                height: 40px;
                 border: none;
-                background: rgba(255,255,255,0.06);
+                background: rgba(255, 255, 255, 0.06);
                 border-radius: 10px;
                 color: #fff;
                 font-size: 18px;
                 cursor: pointer;
-                display: flex; align-items: center; justify-content: center;
+                display: flex;
+                align-items: center;
+                justify-content: center;
                 transition: background 0.2s;
             }
-            #mob-hamburger:active { background: rgba(255,255,255,0.12); }
+
+            #mob-hamburger:active {
+                background: rgba(255, 255, 255, 0.12);
+            }
+
             #mob-header-title {
                 font-size: 15px;
                 font-weight: 700;
                 color: #fff;
-                display: flex; align-items: center; gap: 8px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
             }
+
             #mob-header-right {
-                display: flex; gap: 8px; align-items: center;
+                display: flex;
+                gap: 8px;
+                align-items: center;
             }
 
             /* ── MAIN CONTENT ── */
-            .main { width: 100% !important; flex: 1; overflow-y: auto !important; }
-            .dash-top { flex-direction: column !important; align-items: flex-start !important; gap: 15px !important; padding: 20px !important; height: auto !important; }
-            .dt-ac { width: 100% !important; justify-content: space-between !important; }
-            .p-head { flex-direction: column !important; align-items: flex-start !important; gap: 10px !important; }
-            .sg, .tiers, .g3, .g65, .g2, .ob-steps, .lp-row { grid-template-columns: 1fr !important; flex-direction: column !important; }
-            .page { padding: 18px 16px !important; }
-            .ib-stats { display: none !important; }
-            .forecast { grid-template-columns: repeat(2, 1fr) !important; }
+            .main {
+                width: 100% !important;
+                flex: 1;
+                overflow-y: auto !important;
+            }
+
+            .dash-top {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 15px !important;
+                padding: 20px !important;
+                height: auto !important;
+            }
+
+            .dt-ac {
+                width: 100% !important;
+                justify-content: space-between !important;
+            }
+
+            .p-head {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 10px !important;
+            }
+
+            .sg,
+            .tiers,
+            .g3,
+            .g65,
+            .g2,
+            .ob-steps,
+            .lp-row {
+                grid-template-columns: 1fr !important;
+                flex-direction: column !important;
+            }
+
+            .page {
+                padding: 18px 16px !important;
+            }
+
+            .ib-stats {
+                display: none !important;
+            }
+
+            .forecast {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
 
             /* ── FULL SCREEN PANELS ── */
-            .login-panel, .onboard, .sim, .ai-chat, .set-pan, .comm, .claim-flow, .appeal, .notif-pan, .payment-panel {
+            .login-panel,
+            .onboard,
+            .sim,
+            .ai-chat,
+            .set-pan,
+            .comm,
+            .claim-flow,
+            .appeal,
+            .notif-pan,
+            .payment-panel {
                 width: 100% !important;
                 height: 100vh !important;
                 right: 0 !important;
@@ -3725,71 +3817,133 @@
                 border-radius: 0 !important;
                 transform: translateY(100%);
             }
-            .login-panel.open, .onboard.open, .sim.open, .ai-chat.open, .set-pan.open, .comm.open, .claim-flow.open, .appeal.open, .notif-pan.open, .payment-panel.open {
+
+            .login-panel.open,
+            .onboard.open,
+            .sim.open,
+            .ai-chat.open,
+            .set-pan.open,
+            .comm.open,
+            .claim-flow.open,
+            .appeal.open,
+            .notif-pan.open,
+            .payment-panel.open {
                 transform: translateY(0);
             }
 
             /* ── LANDING (PREMIUM MOBILE FIX) ── */
-            #landing { padding: 40px 20px !important; justify-content: center !important; }
-            .land-nav { padding: 22px 24px !important; display: flex !important; }
-            .land-logo { font-size: 20px !important; }
-            .land-hero { 
-                margin-top: 130px !important; 
-                margin-bottom: 60px !important; 
-                text-align: center !important; 
-                padding: 0 !important; 
+            #landing {
+                padding: 40px 24px !important;
+                justify-content: space-between !important;
+            }
+
+            .land-nav {
+                padding: 22px 24px !important;
+                display: flex !important;
+            }
+
+            .land-logo {
+                font-size: 20px !important;
+            }
+
+            .land-hero {
+                margin-top: 130px !important;
+                margin-bottom: 60px !important;
+                text-align: center !important;
+                padding: 0 !important;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 position: relative;
                 z-index: 5;
             }
-            .land-ey { display: none !important; }
-            .land-t { 
-                font-size: 48px !important; 
-                line-height: 1.02 !important; 
-                letter-spacing: -1.5px !important; 
-                margin-bottom: 20px !important; 
+
+            .land-ey {
+                display: none !important;
             }
-            .land-s { 
-                font-size: 16px !important; 
-                line-height: 1.55 !important; 
-                margin: 0 auto 32px !important; 
-                max-width: 100% !important; 
+
+            .land-t {
+                font-size: 48px !important;
+                line-height: 1.02 !important;
+                letter-spacing: -1.5px !important;
+                margin-bottom: 20px !important;
+            }
+
+            .land-s {
+                font-size: 16px !important;
+                line-height: 1.55 !important;
+                margin: 0 auto 32px !important;
+                max-width: 100% !important;
                 text-align: center !important;
-                color: rgba(255,255,255,0.7) !important;
+                color: rgba(255, 255, 255, 0.7) !important;
             }
-            .land-ctas { 
-                flex-direction: column !important; 
-                gap: 12px !important; 
-                align-items: stretch !important; 
+
+            .land-ctas {
+                flex-direction: column !important;
+                gap: 12px !important;
+                align-items: stretch !important;
                 width: 100%;
                 max-width: 320px;
             }
-            .cta { width: 100% !important; padding: 18px !important; font-size: 15px !important; border-radius: 14px !important; }
-            
+
+            .cta {
+                width: 100% !important;
+                padding: 18px !important;
+                font-size: 15px !important;
+                border-radius: 14px !important;
+            }
+
             /* Hide Clutter on Mobile */
-            .land-feats, .land-ticker, .land-scr { display: none !important; }
-            
+            .land-feats,
+            .land-ticker,
+            .land-scr {
+                display: none !important;
+            }
+
             /* Simplify Bottom Bar for Mobile */
-            .gbar { position: relative !important; margin-top: 40px !important; padding: 0 !important; transform: none !important; animation: none !important; }
-            .gbar-in { 
-                grid-template-columns: 1fr !important; 
-                background: rgba(255,255,255,0.03) !important; 
-                border-radius: 15px !important; 
-                padding: 10px !important; 
+            .gbar {
+                position: relative !important;
+                margin-top: 40px !important;
+                padding: 0 !important;
+                transform: none !important;
+                animation: none !important;
+            }
+
+            .gbar-in {
+                grid-template-columns: 1fr !important;
+                background: rgba(255, 255, 255, 0.03) !important;
+                border-radius: 15px !important;
+                padding: 10px !important;
                 gap: 5px !important;
             }
-            .gbi { padding: 12px !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
-            .gbi:last-child { border: none !important; }
-            .gbi-icon { font-size: 20px !important; }
-            .gbcta { margin-top: 10px !important; }
+
+            .gbi {
+                padding: 12px !important;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+
+            .gbi:last-child {
+                border: none !important;
+            }
+
+            .gbi-icon {
+                font-size: 20px !important;
+            }
+
+            .gbcta {
+                margin-top: 10px !important;
+            }
         }
 
         /* Hide mob-header on desktop */
         @media(min-width:901px) {
-            #mob-header { display: none !important; }
-            #mob-backdrop { display: none !important; }
+            #mob-header {
+                display: none !important;
+            }
+
+            #mob-backdrop {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -3813,33 +3967,16 @@
                 <button class="gnb g" onclick="openLogin('signup')">Get Protected →</button>
             </div>
         </nav>
-        <div class="land-feats">
-            <div class="fp"><span
-                    style="width:5px;height:5px;border-radius:50%;background:var(--green);display:inline-block;"></span>Weather
-                Coverage</div>
-            <div class="fp"><span
-                    style="width:5px;height:5px;border-radius:50%;background:var(--amber);display:inline-block;"></span>₹29/week
-            </div>
-            <div class="fp"><span
-                    style="width:5px;height:5px;border-radius:50%;background:var(--purple);display:inline-block;"></span>AI
-                Assistant</div>
-            <div class="fp"><span
-                    style="width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block;"></span>GPS
-                Anti-Fraud</div>
-            <div class="fp"><span
-                    style="width:5px;height:5px;border-radius:50%;background:var(--blue);display:inline-block;"></span>Instant
-                UPI</div>
-        </div>
-        <div class="land-hero">
-            <div class="land-ey">
-                <div class="ldot"></div>Income Protection Platform
-            </div>
-            <h1 class="land-t">Income protection<br>for <span class="hi">India's</span><br><em>delivery heroes</em></h1>
-            <p class="land-s">When the rain shuts down Mumbai, your payout arrives before it stops. Zero forms, instant
-                UPI, AI-powered.</p>
-            <div class="land-ctas">
-                <button class="cta cta-p" onclick="openLogin('signup')">Start Coverage — ₹29/week</button>
-                <button class="cta cta-g" onclick="openLogin()">Partner Login</button>
+        <div class="land-center">
+            <div class="land-hero">
+                <div class="land-ey">
+                    <div class="ldot"></div>Income Protection Platform
+                </div>
+                <h1 class="land-t">Income protection<br>for <span class="hi">India's</span><br><em>delivery heroes</em></h1>
+                <div class="land-ctas" style="margin-top: 36px;">
+                    <button class="cta cta-p" onclick="openLogin('signup')">Start Coverage — ₹29/week</button>
+                    <button class="cta cta-g" onclick="openLogin()">Partner Login</button>
+                </div>
             </div>
         </div>
         <div class="land-ticker">
@@ -3992,8 +4129,9 @@
                     <div class="fr2">
                         <div class="fg"><label class="lp-lbl">City & Zone</label>
                             <div class="ac-wrap">
-                                <input type="text" class="lp-in fi" id="su-city" placeholder="Type city name (e.g. Mumbai)" 
-                                    autocomplete="off" oninput="showCities('su-city','su-ac-list','su-zone')">
+                                <input type="text" class="lp-in fi" id="su-city"
+                                    placeholder="Type city name (e.g. Mumbai)" autocomplete="off"
+                                    oninput="showCities('su-city','su-ac-list','su-zone')">
                                 <div id="su-ac-list" class="ac-list"></div>
                             </div>
                             <select class="lp-in fs" id="su-zone">
@@ -4089,7 +4227,8 @@
                         <div id="pay-plan-name" style="font-size:18px;font-weight:700;color:#fff;">Standard Shield</div>
                         <div style="font-size:12px;color:rgba(255,255,255,.4);">Weekly Insurance Premium</div>
                     </div>
-                    <div id="pay-plan-price" style="font-size:24px;font-weight:700;color:var(--green);font-family:var(--fh);">₹59</div>
+                    <div id="pay-plan-price"
+                        style="font-size:24px;font-weight:700;color:var(--green);font-family:var(--fh);">₹59</div>
                 </div>
 
                 <div class="pay-sec">Payment Method</div>
@@ -4112,20 +4251,25 @@
                 </div>
 
                 <div class="pay-qr-wrap">
-                    <div style="font-size:11px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;text-align:center;">Scan to Secure Protection</div>
+                    <div
+                        style="font-size:11px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;text-align:center;">
+                        Scan to Secure Protection</div>
                     <div class="pay-qr-box">
                         <img id="pay-qr-img" src="/images/qr-official.jpg" alt="UPI QR Code">
                     </div>
                     <div style="margin-top:16px;text-align:center;">
                         <div id="pay-timer" style="font-family:var(--fm);font-size:13px;color:var(--green);">05:00</div>
-                        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">QR code expires in 5 minutes</div>
+                        <div style="font-size:11px;color:rgba(255,255,255,.3);margin-top:4px;">QR code expires in 5
+                            minutes</div>
                     </div>
                 </div>
 
-                <div id="payment-status" style="display:none;margin-top:20px;text-align:center;padding:20px;background:rgba(var(--gRgb),.1);border:1px solid rgba(var(--gRgb),.3);border-radius:15px;animation:pgIn .4s var(--spring);">
+                <div id="payment-status"
+                    style="display:none;margin-top:20px;text-align:center;padding:20px;background:rgba(var(--gRgb),.1);border:1px solid rgba(var(--gRgb),.3);border-radius:15px;animation:pgIn .4s var(--spring);">
                     <div style="font-size:32px;margin-bottom:8px;">✅</div>
                     <div style="font-size:16px;font-weight:700;color:var(--green);">Payment Successful!</div>
-                    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;">Shielding activated. Redirecting...</div>
+                    <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:4px;">Shielding activated.
+                        Redirecting...</div>
                 </div>
 
                 <div class="pay-btm" id="pay-actions">
@@ -4133,7 +4277,8 @@
                         <span id="pay-btn-text">Pay Securely via UPI</span>
                         <div id="pay-spinner" class="spinner" style="display:none;"></div>
                     </button>
-                    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;opacity:.4;font-size:10px;">
+                    <div
+                        style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;opacity:.4;font-size:10px;">
                         <span>🔒 256-bit AES Encryption</span>
                         <span>·</span>
                         <span>✅ NPCI Certified</span>
@@ -4386,8 +4531,10 @@
                     <div class="ab-ico">🚨</div>
                     <div>
                         <div class="ab-t" style="color:var(--red);">Parametric Trigger — Heavy Rain Red Alert</div>
-                        <div class="ab-b2">IMD Red Alert for <span class="user-city">Mumbai</span>. Standard Shield auto-triggered.
-                            <strong>₹1,200</strong> processing to your UPI in ~90s.</div>
+                        <div class="ab-b2">IMD Red Alert for <span class="user-city">Mumbai</span>. Standard Shield
+                            auto-triggered.
+                            <strong>₹1,200</strong> processing to your UPI in ~90s.
+                        </div>
                     </div>
                     <button class="ab-btn" style="background:var(--red);color:#fff;" onclick="goPage('claims')">View
                         →</button>
@@ -4478,7 +4625,8 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,.3);">🔴 <span class="user-zone">Mumbai · Dharavi</span> under Red
+                        <div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,.3);">🔴 <span
+                                class="user-zone">Mumbai · Dharavi</span> under Red
                             Alert — payout processing.</div>
                     </div>
                 </div>
@@ -4645,15 +4793,18 @@
                             <div
                                 style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
                                 <span style="color:rgba(255,255,255,.35);">Platform</span><span style="font-weight:600;"
-                                    id="pf-platform">Zomato</span></div>
+                                    id="pf-platform">Zomato</span>
+                            </div>
                             <div
                                 style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
                                 <span style="color:rgba(255,255,255,.35);">Zone</span><span style="font-weight:600;"
-                                    id="pf-zone">Dharavi, Mumbai</span></div>
+                                    id="pf-zone">Dharavi, Mumbai</span>
+                            </div>
                             <div
                                 style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
                                 <span style="color:rgba(255,255,255,.35);">Phone</span><span style="font-weight:600;"
-                                    id="pf-phone">+91 98765 43210</span></div>
+                                    id="pf-phone">+91 98765 43210</span>
+                            </div>
                             <div style="display:flex;justify-content:space-between;padding:9px 0;font-size:12px;"><span
                                     style="color:rgba(255,255,255,.35);">UPI ID</span><span style="font-weight:600;"
                                     id="pf-upi">rajan.kumar@upi</span></div>
@@ -4681,7 +4832,8 @@
                                 <div>
                                     <div
                                         style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;">
-                                        <span>Claim History</span><span>Clean 3 months</span></div>
+                                        <span>Claim History</span><span>Clean 3 months</span>
+                                    </div>
                                     <div class="prog-track">
                                         <div class="prog-fill"
                                             style="width:92%;background:linear-gradient(90deg,var(--green),#4ade80);">
@@ -4691,7 +4843,8 @@
                                 <div>
                                     <div
                                         style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;">
-                                        <span>Identity Verified</span><span>100%</span></div>
+                                        <span>Identity Verified</span><span>100%</span>
+                                    </div>
                                     <div class="prog-track">
                                         <div class="prog-fill"
                                             style="width:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);">
@@ -4701,7 +4854,8 @@
                                 <div>
                                     <div
                                         style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px;">
-                                        <span>Platform Activity</span><span>Active</span></div>
+                                        <span>Platform Activity</span><span>Active</span>
+                                    </div>
                                     <div class="prog-track">
                                         <div class="prog-fill"
                                             style="width:85%;background:linear-gradient(90deg,var(--amber),#fbbf24);">
@@ -4924,7 +5078,8 @@
                         </div>
                         <div style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.6;">Share your code with
                             other delivery partners. When they sign up and complete their first week, you both get
-                            <strong style="color:var(--amber);">₹100 bonus</strong>.</div>
+                            <strong style="color:var(--amber);">₹100 bonus</strong>.
+                        </div>
                         <div style="margin-top:14px;display:flex;gap:8px;">
                             <button
                                 style="flex:1;padding:10px;border-radius:10px;border:1.5px solid rgba(var(--gRgb),.3);background:rgba(var(--gRgb),.08);color:var(--green);font-family:var(--ff);font-size:12px;font-weight:700;cursor:pointer;"
@@ -5043,8 +5198,8 @@
                         <span>🤖</span>
                         <div style="font-size:12px;color:rgba(255,255,255,.55);line-height:1.5;"><strong
                                 style="color:rgba(255,255,255,.8);">AI Fraud Check: Auto-Approved</strong> · Trust Score
-                            92 · <span class="user-zone">Dharavi, Mumbai</span> confirmed · Motion: outdoor · Cell tower: match</div><span class="pill pg"
-                            style="margin-left:auto;">CLEAR</span>
+                            92 · <span class="user-zone">Dharavi, Mumbai</span> confirmed · Motion: outdoor · Cell
+                            tower: match</div><span class="pill pg" style="margin-left:auto;">CLEAR</span>
                     </div>
                 </div>
                 <div class="gc" id="claims-history">
@@ -5183,14 +5338,17 @@
                             <div class="gc-t">Premium Breakdown</div>
                             <div
                                 style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
-                                <span style="color:rgba(255,255,255,.45);">Base Rate</span><span>₹50.00</span></div>
+                                <span style="color:rgba(255,255,255,.45);">Base Rate</span><span>₹50.00</span>
+                            </div>
                             <div
                                 style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
                                 <span style="color:rgba(255,255,255,.45);">Zone Risk (1.18×)</span><span
-                                    style="color:var(--amber);">+₹9.00</span></div>
+                                    style="color:var(--amber);">+₹9.00</span>
+                            </div>
                             <div
                                 style="display:flex;justify-content:space-between;padding:9px 0 0;font-size:13px;font-weight:700;">
-                                <span>Weekly Total</span><span style="color:var(--green);">₹59.00</span></div>
+                                <span>Weekly Total</span><span style="color:var(--green);">₹59.00</span>
+                            </div>
                         </div>
                         <div class="gc">
                             <div class="gc-t">Exclusions</div>
@@ -5677,10 +5835,11 @@
                                 </select></div>
                             <div class="fg"><label class="fl">Partner ID</label><input class="fi" id="ob-pid"
                                     placeholder="ZOM-DEL-2024-XXXXX"></div>
-                             <div class="fg"><label class="fl">City</label>
+                            <div class="fg"><label class="fl">City</label>
                                 <div class="ac-wrap">
-                                    <input type="text" class="fs" id="ob-city" placeholder="Type city..." 
-                                        autocomplete="off" oninput="showCities('ob-city','ob-ac-list','ob-zone')" style="padding:10px;width:100%;">
+                                    <input type="text" class="fs" id="ob-city" placeholder="Type city..."
+                                        autocomplete="off" oninput="showCities('ob-city','ob-ac-list','ob-zone')"
+                                        style="padding:10px;width:100%;">
                                     <div id="ob-ac-list" class="ac-list"></div>
                                 </div>
                             </div>
@@ -5844,7 +6003,8 @@
                                         style="color:rgba(255,255,255,.25);">→</span></div>
                                 <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;font-size:13px;cursor:pointer;color:rgba(255,255,255,.7);"
                                     onclick="showToast('Privacy Policy: gigshield.in/privacy','info')">Privacy Policy
-                                    <span style="color:rgba(255,255,255,.25);">→</span></div>
+                                    <span style="color:rgba(255,255,255,.25);">→</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -6258,18 +6418,22 @@
                                 <div
                                     style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);">
                                     <span style="color:rgba(255,255,255,.45);">Active partners in
-                                        zone</span><strong>1,247</strong></div>
+                                        zone</span><strong>1,247</strong>
+                                </div>
                                 <div
                                     style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);">
                                     <span style="color:rgba(255,255,255,.45);">Avg. monthly payout</span><strong
-                                        style="color:var(--green);">₹2,840</strong></div>
+                                        style="color:var(--green);">₹2,840</strong>
+                                </div>
                                 <div
                                     style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);">
                                     <span style="color:rgba(255,255,255,.45);">Triggers this
-                                        month</span><strong>14</strong></div>
+                                        month</span><strong>14</strong>
+                                </div>
                                 <div style="display:flex;justify-content:space-between;font-size:12px;padding:7px 0;">
                                     <span style="color:rgba(255,255,255,.45);">Zone risk level</span><span
-                                        class="pill pr">HIGH RISK</span></div>
+                                        class="pill pr">HIGH RISK</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -6282,7 +6446,8 @@
         <button id="mob-hamburger" onclick="toggleMobSidebar()" aria-label="Open menu">☰</button>
         <div id="mob-header-title">🛡️ GigShield</div>
         <div id="mob-header-right">
-            <button onclick="openSettings()" style="width:36px;height:36px;border:none;background:rgba(255,255,255,0.06);border-radius:9px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">⚙️</button>
+            <button onclick="openSettings()"
+                style="width:36px;height:36px;border:none;background:rgba(255,255,255,0.06);border-radius:9px;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">⚙️</button>
         </div>
     </div>
 
