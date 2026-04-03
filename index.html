@@ -379,7 +379,8 @@
             z-index: 4;
             text-align: center;
             padding: 0 24px;
-            margin-bottom: 150px;
+            margin-top: 20px; /* Reduced to sit naturally below feats */
+            margin-bottom: 40px;
         }
 
         .land-ey {
@@ -502,10 +503,8 @@
 
         /* FEATURES ROW */
         .land-feats {
-            position: absolute;
-            top: 86px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+            margin-top: 110px; /* Offset for absolute nav */
             display: flex;
             gap: 10px;
             flex-wrap: wrap;
@@ -3833,7 +3832,7 @@
         </div>
         <div class="land-hero">
             <div class="land-ey">
-                <div class="ldot"></div>Guidewire DEVTrails 2026
+                <div class="ldot"></div>Income Protection Platform
             </div>
             <h1 class="land-t">Income protection<br>for <span class="hi">India's</span><br><em>delivery heroes</em></h1>
             <p class="land-s">When the rain shuts down Mumbai, your payout arrives before it stops. Zero forms, instant
@@ -4249,7 +4248,7 @@
                     <div class="sb-gem">🛡️</div>
                     <div class="sb-nm">GigShield</div>
                 </div>
-                <div class="sb-tg">DEVTrails 2026</div>
+                <div class="sb-tg">Active Coverage</div>
             </div>
             <div class="sb-worker" onclick="goPage('profile')">
                 <div class="sb-av">🏍️</div>
@@ -4341,7 +4340,7 @@
                             <div class="sw-d" id="sw-loc"><span class="user-zone">Mumbai · Dharavi</span></div>
                         </div>
                     </div>
-                    <div class="sw-b br" id="sw-badge">RED ALERT</div>
+                    <div class="sw-b br" id="sw-badge" style="display: none;">RED ALERT</div>
                 </div>
             </div>
             <div class="sb-ft">
@@ -4383,7 +4382,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="ab ab-r" id="dash-ab">
+                <div class="ab ab-r" id="dash-ab" style="display: none;">
                     <div class="ab-ico">🚨</div>
                     <div>
                         <div class="ab-t" style="color:var(--red);">Parametric Trigger — Heavy Rain Red Alert</div>

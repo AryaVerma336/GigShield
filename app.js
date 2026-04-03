@@ -709,15 +709,27 @@ async function fetchLiveWeather() {
             const locEl = document.getElementById('sw-loc');
             if (locEl) locEl.innerHTML = `<span class="user-zone">${user ? user.zone : location.city}</span>`;
             const alertBanner = document.getElementById('dash-ab');
-            if (alertBanner) {
-                const alertTitle = alertBanner.querySelector('.ab-t');
-                const alertBody = alertBanner.querySelector('.ab-b2');
-                if (alertTitle) { alertTitle.textContent = `Parametric Trigger — ${risk.alertType}`; alertTitle.style.color = risk.alertColor; }
-                if (alertBody) alertBody.textContent = risk.alertMsg;
+            const alertBadge = document.getElementById('sw-badge');
+            
+            if (risk.riskLevel === 'EXTREME') {
+                if (alertBanner) {
+                    alertBanner.style.display = 'flex';
+                    const alertTitle = alertBanner.querySelector('.ab-t');
+                    const alertBody = alertBanner.querySelector('.ab-b2');
+                    if (alertTitle) { alertTitle.textContent = `Parametric Trigger — ${risk.alertType}`; alertTitle.style.color = risk.alertColor; }
+                    if (alertBody) alertBody.textContent = risk.alertMsg;
+                }
+                if (alertBadge) {
+                    alertBadge.style.display = 'block';
+                    alertBadge.textContent = risk.alertType.toUpperCase();
+                }
+                showToast(`🌧️ ${risk.alertType} in ${location.area}! Your coverage is active.`, 'warn', 7000);
+            } else {
+                if (alertBanner) alertBanner.style.display = 'none';
+                if (alertBadge) alertBadge.style.display = 'none';
+                if (risk.riskLevel === 'HIGH') showToast(`⚠️ ${risk.alertType} in ${location.city}. Stay cautious.`, 'info', 5000);
             }
             S.set('liveWeather', { location, weather, risk });
-            if (risk.riskLevel === 'EXTREME') showToast(`🌧️ ${risk.alertType} in ${location.area}! Your coverage is active.`, 'warn', 7000);
-            else if (risk.riskLevel === 'HIGH') showToast(`⚠️ ${risk.alertType} in ${location.city}. Stay cautious.`, 'info', 5000);
         } catch (e) { console.warn('Live weather fetch failed:', e.message); }
     }, () => { console.info('Location denied or unavailable. Using default data.'); }, { timeout: 8000, maximumAge: 300000 });
 }
