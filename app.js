@@ -416,10 +416,9 @@ function openPayment(name, price, payout) {
     if (nameEl) nameEl.textContent = name + ' Shield';
     if (priceEl) priceEl.textContent = price;
     
-    // Update QR data with price
+    // Use static QR as requested by user
     if (qrImg) {
-        const amt = price.replace('₹','');
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=upi://pay?pa=gigshield@upi&pn=GigShield%20India&am=${amt}&cu=INR`;
+        qrImg.src = "/images/qr-official.jpg";
     }
     
     if (p) p.classList.add('open');

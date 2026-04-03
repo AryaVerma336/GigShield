@@ -2817,14 +2817,15 @@
             position: relative;
             z-index: 2;
             width: 480px;
-            max-width: 92%;
+            max-width: 95%;
+            max-height: 90vh; /* Added to fit screen */
             background: rgba(8, 14, 10, .98);
             border: 1.5px solid rgba(255, 255, 255, .1);
             border-radius: 28px;
             box-shadow: 0 32px 80px rgba(0, 0, 0, .8);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: hidden; /* Header/Body split */
             transform: translateY(30px) scale(.98);
             transition: all .6s var(--spring);
         }
@@ -4114,8 +4115,7 @@
                 <div class="pay-qr-wrap">
                     <div style="font-size:11px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;text-align:center;">Scan to Secure Protection</div>
                     <div class="pay-qr-box">
-                        <img id="pay-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=upi://pay?pa=gigshield@upi&pn=GigShield%20India&am=59&cu=INR" alt="UPI QR Code">
-                        <div class="pay-qr-logo">🛡️</div>
+                        <img id="pay-qr-img" src="/images/qr-official.jpg" alt="UPI QR Code">
                     </div>
                     <div style="margin-top:16px;text-align:center;">
                         <div id="pay-timer" style="font-family:var(--fm);font-size:13px;color:var(--green);">05:00</div>
